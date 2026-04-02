@@ -237,7 +237,7 @@
 .map-container-desktop { display: block; width: 100%; max-width: 1000px; margin: 0 auto; position: relative; }
 
 /* Mobile: Lista a scorrimento (Carousel) */
-.journey-carousel-mobile { display: none; width: 100%; overflow-x: auto; padding: 20px 0; scroll-snap-type: x mandatory; gap: 20px; }
+.journey-carousel-mobile { display: flex; width: 100%; overflow-x: auto; padding: 20px 0; scroll-snap-type: x mandatory; gap: 20px; scrollbar-width: none; }
 
 /* Card per Mobile */
 .journey-card {
@@ -251,17 +251,73 @@
     flex-direction: column;
 }
 
+/* Contenitore relativo per posizionare frecce e puntini */
+.carousel-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+}
+
+/* Puntini (Dots) */
+.dots-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #cfd8dc;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.dot.active {
+    background: #4db6ac;
+    transform: scale(1.3);
+}
+
+/* Frecce per la Modale (PC) */
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.8);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 15;
+    font-size: 1.2rem;
+    color: #4db6ac;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+.nav-arrow:hover { background: white; color: #00796b; }
+.prev-arrow { left: 10px; }
+.next-arrow { right: 10px; }
+
+/* Nascondiamo la scrollbar nativa per un look pulito */
+.journey-carousel-mobile, .modal-gallery {
+    scrollbar-width: none; /* Firefox */
+}
+.journey-carousel-mobile::-webkit-scrollbar, .modal-gallery::-webkit-scrollbar {display: none; /* Chrome/Safari */}
+
 .journey-card img { width: 100%; height: 200px; object-fit: cover; }
 .card-content { padding: 20px; text-align: center; }
 
-/* Media Query per Mobile */
-@media (max-width: 768px) {
-    .map-container-desktop { display: none; } /* Nascondiamo la mappa problematica */
-    .journey-carousel-mobile { display: flex; } /* Mostriamo il carousel fluido */
-    section#viaggio { padding-left: 20px; } /* Reset padding sidebar mobile */
-}
-   
-   .honey-wrapper { position: relative; width: 100%; max-width: 1000px; margin: 0 auto; }
+/* Nasconde il carousel e le card singole su PC */
+.journey-carousel-mobile {display: none;}
+
+.honey-wrapper { position: relative; width: 100%; max-width: 1000px; margin: 0 auto; }
         .honey-map { width: 100%; display: block; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 2px solid white; }
         .map-point { position: absolute; width: 20px; height: 20px;transform: translate(-50%, -50%); cursor: pointer; z-index: 10;}
 
@@ -275,7 +331,7 @@
     display: none; /* Nascosto di default */
     justify-content: center;
     align-items: center;
-    z-index: 2000;
+    z-index: 2000 !important;
     padding: 20px;
 }
 
@@ -382,19 +438,26 @@
 
         .petal { position: absolute; background-size: contain; background-repeat: no-repeat; opacity: 0.6; pointer-events: none; z-index: 50; will-change: transform; }
 
-        @media (max-width: 1100px) { 
-            .grid-location { grid-template-columns: 1fr; max-width: 550px; } 
-            .info-panel { position: fixed; bottom: 20px; left: 20px; right: 20px; top: auto; width: auto; transform: none; }
-            .map-point:hover + .info-panel { right: 20px; }
-        }
-        @media (max-width: 1000px) { section { padding: 100px 20px; } }
-        @media (max-width: 768px) {
-            .hamburger { display: block; }
-            .sidebar { left: -260px; }
-            .sidebar.active { left: 0; }
-            .main-content { margin-left: 0; width: 100%; }
-            #home h1 { font-size: 3.5rem; }
-        }
+@media (max-width: 768px) {
+.hamburger { display: block; }
+.sidebar { left: -260px; }
+.sidebar.active { left: 0; }
+.main-content { margin-left: 0; width: 100%; }
+#home h1 { font-size: 3.5rem; }
+
+.map-container-desktop { display: none !important; } 
+.carousel-wrapper { display: block !important; }/* Nascondiamo la mappa problematica */
+.journey-carousel-mobile { display: flex !important; }
+section#viaggio { padding: 80px 20px; }
+}
+
+/* Media Query per PC (Desktop) */
+@media (min-width: 769px) {
+.carousel-wrapper:not(.modal-content .carousel-wrapper) { display: none !important; }
+.map-container-desktop { display: block; position: relative; z-index: 10; }
+}
+
+
     </style>
 </head>
 <body>
@@ -407,7 +470,7 @@
         <h4>U&L</h4>
         <a href="#home">Home</a>
         <a href="#location">Programma</a>
-        <a href="#viaggio">Luna di Miele</a>
+        <a href="#viaggio">Viaggio di Nozze</a>
         <a href="#rsvp">Conferma Presenza</a>
         <a href="#foto">Galleria Condivisa</a>
         <a href="#contatti">Contatti</a>
@@ -439,8 +502,9 @@
                 <div class="card-info" style="border: 1px solid #b2dfdb; background-color: #faffff;">
                     <div class="card-icon" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2380cbc4%22 stroke-width=%221.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><rect x=%223%22 y=%227%22 width=%2218%22 height=%2212%22 rx=%222%22/><path d=%22M7 19v2%22/><path d=%22M17 19v2%22/><path d=%22M3 13h18%22/></svg>');"></div>
                     <h3>Servizio Navetta</h3>
-                    <p>Potenza ⇄ Matera</p>
-                    <p>Andata: ore 12:00 (Chiesa)<br>Ritorno: ore 00:00 (Sala)</p>
+                     <p>Potenza ⇄ Matera</p>
+                     <p><strong>Andata:</strong> Al termine della cerimonia si partirà dal piazzale della chiesa</p>
+                    <p><strong>Ritorno:</strong> La partenza è prevista per le ore 00:00 circa dalla sala ricevimenti, con arrivo al piazzale della chiesa</p>
                 </div>
                 
                 <div class="card-info">
@@ -482,30 +546,48 @@
         </div>
     </div>
 
-<div class="journey-carousel-mobile">
+<div class="carousel-wrapper">
+    <div class="journey-carousel-mobile" id="mainCarousel">
         <div class="journey-card">
             <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=500" alt="Maldive">
-            <div class="card-content">
-                <h3>Maldive</h3>
-                <button class="btn-gold" onclick="openTravelModal('maldive')">Scopri la tappa</button>
-            </div>
+            <div class="card-content"> <h3>Maldive</h3> <button class="btn-gold" onclick="openTravelModal('maldive')">Scopri la tappa</button> </div>
+</div>
+     <div class="journey-card">
+     <img src="https://img.static-kl.com/transform/1f159175-0757-4f9e-a9a8-ec6dbd5bce68/?io=transform:fill,width:1920&consumerid=bwp" alt="Kuala Lumpur">
+            <div class="card-content"> <h3>Kuala Lumpur</h3> <button class="btn-gold" onclick="openTravelModal('kl')">Scopri la tappa</button> </div>
         </div>
-        </div>
-           
-    <div class="journey-carousel-mobile">
+
         <div class="journey-card">
-            <img src="https://img.static-kl.com/transform/1f159175-0757-4f9e-a9a8-ec6dbd5bce68/?io=transform:fill,width:1920&consumerid=bwp" alt="Kuala Lumpur">
+            <img src="https://img.static-kl.com/transform/1f159175-0757-4f9e-a9a8-ec6dbd5bce68/?io=transform:fill,width:1920&consumerid=bwp" alt="Malacca">
             <div class="card-content">
-                <h3>Kuala Lumpur</h3>
-                <button class="btn-gold" onclick="openTravelModal('kl')">Scopri la tappa</button>
-            </div>
+<h3>Malacca</h3>
+<button class="btn-gold" onclick="openTravelModal('malacca')">Scopri la tappa</button> </div>
         </div>
+        <div class="journey-card">
+            <img src="https://img.static-kl.com/transform/1f159175-0757-4f9e-a9a8-ec6dbd5bce68/?io=transform:fill,width:1920&consumerid=bwp" alt="Orchid Garden, Singapore">
+<div class="card-content">
+<h3>Orchid Garden, Singapore</h3>
+<button class="btn-gold" onclick="openTravelModal('orchid')">Scopri la tappa</button> </div>
         </div>
+        <div class="journey-card">
+         <img src="https://img.static-kl.com/transform/1f159175-0757-4f9e-a9a8-ec6dbd5bce68/?io=transform:fill,width:1920&consumerid=bwp" alt="Mandai Wildlife Reserve">
+<div class="card-content">
+<h3>Mandai Wildlife Reserve</h3>
+<button class="btn-gold" onclick="openTravelModal('mandai')">Scopri la tappa</button> </div>
+        </div>
+</div>
+    <div class="dots-container" id="mainDots"></div>
+</div>
 
 <div id="travelModal" class="travel-modal">
         <div class="modal-content">
             <span class="modal-close" onclick="closeTravelModal()" style="position:absolute; top:15px; right:20px; z-index:10; font-size:30px; cursor:pointer;">&times;</span>
+<div class="carousel-wrapper">
+        <button class="nav-arrow prev-arrow" onclick="moveGallery(-1)">&#10094;</button>
             <div class="modal-gallery" id="modalGallery"></div>
+<button class="nav-arrow next-arrow" onclick="moveGallery(1)">&#10095;</button>
+    </div>
+    <div class="dots-container" id="modalDots" style="margin-bottom:15px;"></div>
             <div class="modal-body">
                 <h3 id="modalTitle"></h3>
                 <p id="modalDesc" style="color: #607d8b; margin-bottom: 20px;"></p>
@@ -522,7 +604,7 @@
             <div class="agency-data-row"><strong>IBAN:</strong> IT 00 X 00000 00000 000000000000</div>
             <div class="agency-data-row"><strong>Causale:</strong> Umberto & Laura - 12/09/2026</div>
             <div class="agency-data-row"><strong>Tel:</strong> +39 0971 XXXXXX</div>
-            <button class="btn-gold" style="width:100%; margin-top:10px;" onclick="closeAgencyModal()">Ho capito</button>
+            <button class="btn-gold" style="width:100%; margin-top:10px;" onclick="closeAgencyModal()">Chiudi</button>
         </div>
     </div>
 </section>
@@ -555,13 +637,13 @@
                     <h3 style="color: #4db6ac;">Umberto</h3>
                     <a href="tel:+393481888685" style="color: #546e7a; text-decoration: none; font-weight: 600; display: block; margin-bottom: 10px;">📞 +39 348 188 8685</a>
                     <a href="mailto:umbertolarocca52@gmail.com" style="color: #78909c; text-decoration: none; font-size: 0.9rem; display: block;">✉️ umbertolarocca52@gmail.com</a>
-                    <a href="https://wa.me/393481888685" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 0.9rem; margin-bottom: 15px;">💬 WhatsApp</a>
+                    <a href="https://wa.me/393481888685?text=Ciao%20Umberto!%20Ti%20scrivo%20per%20il%20matrimonio..." target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 0.9rem; margin-bottom: 15px;">💬 WhatsApp</a>
                 </div>
                 <div class="card-info" style="flex: 1; min-width: 280px;">
                     <h3 style="color: #4db6ac;">Laura</h3>
                     <a href="tel:+393385732116" style="color: #546e7a; text-decoration: none; font-weight: 600; display: block; margin-bottom: 10px;">📞 +39 338 573 2116</a>
                     <a href="mailto:laura.cammarota95@gmail.com" style="color: #78909c; text-decoration: none; font-size: 0.9rem; display: block;">✉️ laura.cammarota95@gmail.com</a>
-                                                 <a href="https://wa.me/393385732116" target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 0.9rem; margin-bottom: 15px;">💬 WhatsApp</a>
+<a href="https://wa.me/393385732116?text=Ciao%20Laura!%20Ti%20scrivo%20per%20il%20matrimonio..." target="_blank" style="display: inline-block; background-color: #25D366; color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 0.9rem; margin-bottom: 15px;">💬 WhatsApp</a>
 
                 </div>
             </div>
@@ -616,88 +698,149 @@
             link.addEventListener('click', () => { if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('active'); });
         });
 
+let currentTappa = '';
+let currentImgIndex = 0;
+
+// Funzione per creare i puntini dinamicamente
+function createDots(containerId, count, scrollTargetId) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        if (i === 0) dot.classList.add('active');
+        dot.onclick = () => {
+            const target = document.getElementById(scrollTargetId);
+            const width = target.offsetWidth;
+            target.scrollTo({ left: width * i, behavior: 'smooth' });
+        };
+        container.appendChild(dot);
+    }
+}
+
+// Gestione scorrimento Infinito e Puntini per la Modale
+function moveGallery(direction) {
+    const gallery = document.getElementById('modalGallery');
+    const imgs = travelData[currentTappa].imgs;
+    currentImgIndex += direction;
+
+    if (currentImgIndex >= imgs.length) currentImgIndex = 0; // Torna all'inizio
+    if (currentImgIndex < 0) currentImgIndex = imgs.length - 1; // Va all'ultima
+
+    const width = gallery.offsetWidth;
+    gallery.scrollTo({ left: width * currentImgIndex, behavior: 'smooth' });
+    updateDots('modalDots', currentImgIndex);
+}
+
+function updateDots(containerId, index) {
+    const dots = document.querySelectorAll(`#${containerId} .dot`);
+    dots.forEach((d, i) => {
+        d.classList.toggle('active', i === index);
+    });
+}
+
+
 const travelData = {
     'maldive': {
         title: "Atollo di Ari, Maldive",
         desc: "Un paradiso di atolli incontaminati dove il tempo si ferma. Qui celebreremo l'inizio della nostra vita insieme tra acque cristalline e barriere coralline.",
-        imgs: ["https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1506953823976-52e1bdc0149a?auto=format&fit=crop&w=800&q=80"]
-    },
+        imgs: ["https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=800&q=80", "https://d2p1cf6997m1ir.cloudfront.net/media/thumbnails/ee/0e/ee0ef1f414b2f07ab1af5623473bf5b8.webp?s=789c0dcc0b1240300c05c01311448be3445fda09433b7ee3f8ec01765398d09cf36a7ba27264dce1b24d929e142339a1c15133c0910387161c1951bc6f479918ddd4a3d2b7e861ba073d2bd8f33f5c2f257d769e1e54&g=31393230&p=789c3d8cb10a42310c45ff25aedd5ca4e3037115174789692a0f6253d31614f1df0d05bddbb9f772de40a615221097ce0601b2da1dbb37e7fd72747e0c94b5bf20eeb6014845ad5524f6c3e9b0f83e6a2314e76e83c3d45df509b10c9100a6a3244e3fac98d25a6e10334ae33f5fa6d7959b3c039f2fedb9330c&sign=64717621ab4bd1e07e31d3866d2f254d69e4b861f706e35ef4836619822b08fac31e74e6b9ec8f8456d09b61554ee7decf473c641d46d301b1b1af77cdd9379b", "https://lemiemaldive.com/wp-content/uploads/2024/08/BarrieraCorallina.jpg", "https://storagelargeimg.imgix.net/cinnamon-velifushi-maldives-04.jpg?fm=jpg&fit=fillmax&fill=blur&w=1000&h=613&fit=scale"]
+          },
     'kl': {
         title: "Kuala Lumpur",
-        desc: "La giungla urbana della Malesia: tra mercati colorati e le maestose torri Petronas, scopriremo il cuore moderno del Sud-Est asiatico.",
+        desc: "La giungla urbana della Malesia: tra mercati affollati, templi colorati e le maestose torri gemelle Petronas, scopriremo il cuore moderno del Sud-Est asiatico.",
+        imgs: ["https://img.static-kl.com/transform/1f159175-0757-4f9e-a9a8-ec6dbd5bce68/?io=transform:fill,width:1920&consumerid=bwp", "https://res.cloudinary.com/https-www-isango-com/image/upload/f_auto/t_m_Prod/v1763114111/south%20east%20asia/malaysia/kuala%20lumpur/batu_caves.jpg", "https://cdn.prod.website-files.com/67930162e1087e376fc8c59b/67fe82b1bda444d7074a3770_Thean%20Hou%20Temple%20Kuala%20Lumpur8.png", "https://www.cestee.it/images/94/26/19426-2160w.webp"]
+    },
+
+'malacca': {
+        title: "Malacca, Malesia",
+        desc: "Un tuffo nella storia coloniale e nella tradizione locale",
+        imgs: ["https://www.marcotogni.it/top-v2/15/stadthuys.jpg", "https://tourismmelaka.com/wp-content/uploads/157_Cheng-Hoon-Teng-Temple.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Malacca_Sultanate_Palace_Museum_1.jpg/1920px-Malacca_Sultanate_Palace_Museum_1.jpg?_=20150914165206", "https://assets.puzzlefactory.com/puzzle/339/691/original.webp"]
+    },
+'orchid': {
+        title: "Orchid Garden, Singapore",
+        desc: "Migliaia di specie di orchidee in un giardino botanico unico",
         imgs: ["https://img.static-kl.com/transform/1f159175-0757-4f9e-a9a8-ec6dbd5bce68/?io=transform:fill,width:1920&consumerid=bwp"]
     },
+'mandai': {
+        title: "Mandai Wildlife Reserve, Singapore",
+        desc: "Migliaia di specie di orchidee in un giardino botanico unico",
+        imgs: ["https://img.static-kl.com/transform/1f159175-0757-4f9e-a9a8-ec6dbd5bce68/?io=transform:fill,width:1920&consumerid=bwp"]
+    },
+
     // ... Aggiungi qui kl, malacca, sg1, sg2 con le loro foto e testi
 };
 
 function openTravelModal(tappa) {
-    const data = travelData[tappa];
+currentTappa = tappa;
+    currentImgIndex = 0;    
+const data = travelData[tappa];
 document.getElementById('modalTitle').innerText = data.title;
     document.getElementById('modalDesc').innerText = data.desc;
     document.getElementById('modalGallery').innerHTML = data.imgs.map(img => `<img src="${img}">`).join('');
-    document.getElementById('travelModal').style.display = 'flex';
+    
+createDots('modalDots', data.imgs.length, 'modalGallery');
+document.getElementById('travelModal').style.display = 'flex';
 }
+
+// Inizializzazione Dots per Mobile al caricamento
+// Gestione inizializzazione, scroll e progress bar
+window.addEventListener('DOMContentLoaded', () => {
+    const mainCarousel = document.getElementById('mainCarousel');
+    if (mainCarousel) {
+        const cardCount = mainCarousel.querySelectorAll('.journey-card').length;
+        createDots('mainDots', cardCount, 'mainCarousel');
+        
+        mainCarousel.addEventListener('scroll', () => {
+            const index = Math.round(mainCarousel.scrollLeft / mainCarousel.offsetWidth);
+            updateDots('mainDots', index);
+        });
+    }
+    // Avvia la barra progressi
+    updateProgressBar();
+});
 
 function closeTravelModal() {
     document.getElementById('travelModal').style.display = 'none';
 }
 
-function openAgencyModal() { document.getElementById('agencyModal').style.display = 'flex'; }
+function openAgencyModal() { 
+    document.getElementById('agencyModal').style.display = 'flex'; 
+}
 
-function closeAgencyModal() { document.getElementById('agencyModal').style.display = 'none'; }
+function closeAgencyModal() { 
+    document.getElementById('agencyModal').style.display = 'none'; 
+}
 
-// Logica Progresso (già fornita)
-const progressoAttuale = 40; 
 function updateProgressBar() {
     const fill = document.getElementById('progress-fill');
-    const text = document.getElementById('percent-text');
-    const closedMsg = document.getElementById('list-closed-msg');
-    const actionButtons = document.querySelectorAll('.btn-gold'); // Seleziona i bottoni di contribuzione
+    const progressoAttuale = 40; // Valore percentuale
 
-    // Anima la barra
-    setTimeout(() => {
-        fill.style.width = progressoAttuale + "%";
-        text.innerText = progressoAttuale + "%";
-        fill.innerText = progressoAttuale >= 10 ? progressoAttuale + "%" : "";
-    }, 500);
-animatePercent(progressoAttuale);
-
-    // Controllo chiusura lista
+    if (fill) {
+        setTimeout(() => {
+            fill.style.width = progressoAttuale + "%";
+            fill.innerText = progressoAttuale >= 10 ? progressoAttuale + "%" : "";
+            animatePercent(progressoAttuale);
+        }, 500);
+    }
     if (progressoAttuale >= 100) {
-        closedMsg.style.display = "block";
-        
-        // Disabilita o nasconde i tasti "Regala un'emozione"
-        actionButtons.forEach(btn => {
-            if (btn.innerText.includes("Regala") || btn.innerText.includes("Contribuisci")) {
-                btn.style.display = "none"; 
-            }
-        });
-
-        // Impedisce l'apertura della modale agenzia anche dai puntini mappa
-        window.openAgencyModal = function() {
-            alert("La lista è stata completata! Grazie mille per il pensiero.");
-        };
+        const msg = document.getElementById('list-closed-msg');
+        if (msg) msg.style.display = "block";
+        document.querySelectorAll('.action-btn').forEach(btn => btn.style.display = "none");
     }
 }
 
-// Avvia la funzione al caricamento della pagina
-window.addEventListener('DOMContentLoaded', updateProgressBar);
-
 function animatePercent(target) {
     let current = 0;
-    const duration = 2000; // 2 secondi
-    const stepTime = Math.abs(Math.floor(duration / target));
-    const timer = setInterval(() => {
-        current++;
-        document.getElementById('percent-text').innerText = current + "%";
-        if (current >= target) clearInterval(timer);
-    }, stepTime);
-}
-
-// Chiamala dentro updateProgressBar()
-animatePercent(progressoAttuale);
-
-
+    const textElem = document.getElementById('percent-text');
+    if (!textElem) return;
+    const interval = setInterval(() => {
+        if (current >= target) {
+            clearInterval(interval);
+        } else {
+            current++;
+            textElem.innerText = current + "%";
+        } }, 20);}
     </script>
 </body>
 </html>
