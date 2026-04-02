@@ -318,7 +318,7 @@
 .journey-carousel-mobile {display: none;}
 
 .honey-wrapper { position: relative; width: 100%; max-width: 1000px; margin: 0 auto; }
-        .honey-map { width: 100%; display: block; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 2px solid white; }
+.honey-map { width: 100%; display: block; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 2px solid white; }
         .map-point { position: absolute; width: 20px; height: 20px;transform: translate(-50%, -50%); cursor: pointer; z-index: 10;}
 
        /* --- MODALE VIAGGIO (IL RIQUADRO GRANDE) --- */
@@ -443,6 +443,11 @@
 .sidebar { left: -260px; }
 .sidebar.active { left: 0; }
 .main-content { margin-left: 0; width: 100%; }
+section { 
+        padding: 80px 20px !important; /* Forza l'azzeramento del margine di 300px del PC */
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
 #home h1 { font-size: 3.5rem; }
 
 .map-container-desktop { display: none !important; } 
@@ -823,6 +828,7 @@ function updateProgressBar() {
             animatePercent(progressoAttuale);
         }, 500);
     }
+
     if (progressoAttuale >= 100) {
         const msg = document.getElementById('list-closed-msg');
         if (msg) msg.style.display = "block";
@@ -840,7 +846,9 @@ function animatePercent(target) {
         } else {
             current++;
             textElem.innerText = current + "%";
-        } }, 20);}
+        }
+    }, 20);
+}
     </script>
 </body>
 </html>
