@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Umberto & Laura - 12 Ottobre 2026</title>
+    <title>Umberto & Laura - 12 Settembre 2026</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
 
@@ -127,10 +127,114 @@
 
 /* --- LUNA DI MIELE --- */
 /* --- SEZIONE VIAGGIO REVISIONATA --- */
-#viaggio { padding: 80px 20px; overflow: hidden; }
+#viaggio { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 40px 100px 300px; overflow: hidden; }
+
+/* --- PROGRESS BAR VIAGGIO --- */
+.progress-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto 40px;
+    text-align: center;
+}
+
+.progress-label {
+    font-size: 1.1rem;
+    color: #546e7a;
+    margin-bottom: 10px;
+    display: block;
+    font-weight: 600;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 30px;
+    background: #f0f7f7;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: inset 0 5px 15px rgba(0,0,0,0.08);
+    position: relative;
+    border: 1px solid rgba(128, 203, 196, 0.2);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(45deg, 
+        #4db6ac 25%, 
+        #80cbc4 25%, 
+        #80cbc4 50%, 
+        #4db6ac 50%, 
+        #4db6ac 75%, 
+        #80cbc4 75%, 
+        #80cbc4 100%);
+    width: 0%; /* Si aggiornerà via JS */
+    transition: width 2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    position: relative;
+    animation: move-stripes 2s linear infinite; /* Le strisce si muovono! */
+}
+
+/* Effetto riflesso lucido sopra la barra */
+.progress-bar-fill::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(
+        to bottom, 
+        rgba(255,255,255,0.4) 0%, 
+        rgba(255,255,255,0) 50%, 
+        rgba(0,0,0,0.05) 100%
+    );
+}
+
+/* Il "bagliore" sulla punta della barra */
+.progress-bar-fill::before {
+    content: "✈️";
+    position: absolute;
+    right: 5px;
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 5px white);
+    animation: sparkle 1.0s infinite alternate;
+}
+
+/* Animazione delle strisce */
+@keyframes move-stripes {
+    from { background-position: 0 0; }
+    to { background-position: 40px 0; }
+}
+
+/* Animazione luccichio sulla punta */
+@keyframes sparkle {
+    from { transform: scale(0.8) rotate(0deg); opacity: 0.7; }
+    to { transform: scale(1.2) rotate(20deg); opacity: 1; }
+}
+
+/* Hover sulla barra */
+.progress-container:hover .progress-bar-fill {
+    filter: brightness(1.1);
+    cursor: help;
+}
+
+
+/* Messaggio di Lista Chiusa */
+#list-closed-msg {
+    display: none;
+    background: #fff3e0;
+    color: #e65100;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #ffcc80;
+    margin-top: 20px;
+    font-weight: 600;
+}
 
 /* Desktop: Mappa Interattiva */
-.map-container-desktop { display: block; width: 100%; max-width: 1000px; position: relative; }
+.map-container-desktop { display: block; width: 100%; max-width: 1000px; margin: 0 auto; position: relative; }
 
 /* Mobile: Lista a scorrimento (Carousel) */
 .journey-carousel-mobile { display: none; width: 100%; overflow-x: auto; padding: 20px 0; scroll-snap-type: x mandatory; gap: 20px; }
@@ -177,8 +281,8 @@
 
 .modal-content {
     background: white;
-    width: 90%;
-    max-width: 800px;
+    width: 95%;
+    max-width: 700px;
     border-radius: 30px;
     overflow: hidden;
     position: relative;
@@ -188,8 +292,21 @@
 -webkit-overflow-scrolling: touch;
 }
 
+/* --- MODALE 2: DATI AGENZIA (PICCOLA) --- */
+.agency-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9); display: none;
+    justify-content: center; align-items: center; z-index: 3000; /* Più alto della prima modale */
+    padding: 20px;
+}
+.agency-content {
+    background: #fdfdfd; width: 90%; max-width: 400px; border-radius: 25px;
+    padding: 30px; text-align: center; position: relative;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.5);}
+
+
 @keyframes slideUp {
-    from { transform: translateY(50px); opacity: 0; }
+    from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
 
@@ -223,18 +340,10 @@
     text-align: center;
 }
 
+.agency-data-row { background: #f4fbfb; padding: 12px; border-radius: 10px; margin-bottom: 8px; font-family: monospace; font-size: 0.85rem; border: 1px solid #e0f2f1; word-break: break-all; }
+
 .modal-body h3 { font-size: 2rem; color: #4db6ac; margin-bottom: 15px; }
 .modal-body p { margin-bottom: 20px; line-height: 1.6; color: #607d8b; }
-
-/* Box Dati Agenzia dentro la modale */
-.agency-box {
-    background: #f0f7f7;
-    padding: 20px;
-    border-radius: 15px;
-    margin-top: 15px;
-    display: none; /* Si mostra solo se cliccano il bottone regalo */
-    border: 1px dashed #80cbc4;
-}
 
         
         /* Effetto Radar */
@@ -256,11 +365,11 @@
         }
         
          /* Coordinate precise punti rossi 1HMhML5 */
-        .pt-maldive { top: 79.8%; left: 36.7%; }
+        .pt-maldive { top: 80.5%; left: 6.0%; }
         .pt-kl { top: 78.0%; left: 63.2%; }
         .pt-malacca { top: 80.2%; left: 64.5%; }
         .pt-singapore1 { top: 82.0%; left: 66.4%; }
-        .pt-singapore2 { top: 82.5%; left: 67.5%; }
+        .pt-singapore2 { top: 82.9%; left: 67.5%; }
 
         /* BOTTONI */
         .btn-gold { 
@@ -269,7 +378,7 @@
             transition: 0.4s; margin-top: 25px; letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(128, 203, 196, 0.3);
         }
-        .btn-gold:hover { background-color: #4db6ac; transform: scale(1.03); }
+        .btn-gold:hover { background-color: #4db6ac; transform: scale(1.05); }
 
         .petal { position: absolute; background-size: contain; background-repeat: no-repeat; opacity: 0.6; pointer-events: none; z-index: 50; will-change: transform; }
 
@@ -308,7 +417,7 @@
         
         <section id="home">
             <h1>Umberto & Laura</h1>
-            <p class="date">12 Ottobre 2026</p>
+            <p class="date">12 Settembre 2026</p>
             <div class="countdown-container">
                 <div class="countdown-box"><span class="count-number" id="days">00</span><span class="count-label">Giorni</span></div>
                 <div class="countdown-box"><span class="count-number" id="hours">00</span><span class="count-label">Ore</span></div>
@@ -347,8 +456,19 @@
        <section id="viaggio">
     <h2>Il Nostro Viaggio di Nozze</h2>
     <p style="margin-bottom: 30px; color: #78909c;">Tocca le tappe sulla mappa per sognare insieme a noi</p>
-<p style="margin-bottom: 10px; color: #78909c;">Accompagnaci nella nostra esperienza a Singapore, la Malesia e le Maldive</p>
+<p style="margin-bottom: 10px; color: #78909c;">Accompagnaci nella nostra esperienza a Singapore, Malesia e Maldive!</p>
 
+<div class="progress-container">
+        <span class="progress-label">Il nostro sogno è completo al: <span id="percent-text"></span></span>
+        <div class="progress-bar-bg">
+            <div id="progress-fill" class="progress-bar-fill"></div>
+        </div>
+        
+        <div id="list-closed-msg">
+            🎉 Obiettivo raggiunto! La lista nozze è ufficialmente chiusa. <br>
+            Grazie di cuore a tutti per aver reso possibile questo sogno!
+        </div>
+    </div>
     
     <div class="map-container-desktop">
         <div class="honey-wrapper">
@@ -361,42 +481,38 @@
             <div class="map-point pt-singapore2" onclick="openTravelModal('sg2')"><div class="radar"></div></div>
         </div>
     </div>
+
 <div class="journey-carousel-mobile">
         <div class="journey-card">
             <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=500" alt="Maldive">
             <div class="card-content">
                 <h3>Maldive</h3>
-                <p>Atollo di Ari: relax e mare cristallino.</p>
-                <button class="btn-gold" onclick="openTravelModal('maldive')">Contribuisci</button>
-            </div>
-        </div>
-        <div class="journey-card">
-            <img src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=500" alt="Kuala Lumpur">
-            <div class="card-content">
-                <h3>Kuala Lumpur</h3>
-                <p>Le spettacolari torri Petronas.</p>
-                <button class="btn-gold" onclick="openTravelModal('kl')">Contribuisci</button>
+                <button class="btn-gold" onclick="openTravelModal('maldive')">Scopri la tappa</button>
             </div>
         </div>
         </div>
 
-    <div id="travelModal" class="travel-modal">
+<div id="travelModal" class="travel-modal">
         <div class="modal-content">
-            <span class="modal-close" onclick="closeTravelModal()">&times;</span>
-            <div class="modal-gallery" id="modalGallery">
-                </div>
+            <span class="modal-close" onclick="closeTravelModal()" style="position:absolute; top:15px; right:20px; z-index:10; font-size:30px; cursor:pointer;">&times;</span>
+            <div class="modal-gallery" id="modalGallery"></div>
             <div class="modal-body">
-                <h3 id="modalTitle">Titolo Tappa</h3>
-                <p id="modalDesc">Descrizione della tappa...</p>
-                
-                <button class="btn-gold" onclick="toggleAgencyInfo()">🎁 Regala un'emozione per questa tappa</button>
-                
-                <div id="agencyInfo" class="agency-box">
-                    <p><strong>Agenzia Alimathà Viaggi</strong><br>
-                    IBAN: IT 00 X 00000 00000 000000000000<br>
-                    Causale: Matrimonio Umberto & Laura - 12/09/2026</p>
-                </div>
+                <h3 id="modalTitle"></h3>
+                <p id="modalDesc" style="color: #607d8b; margin-bottom: 20px;"></p>
+                <button class="btn-gold action-btn" onclick="openAgencyModal()">🎁Regala un'emozione per questa tappa</button>
             </div>
+        </div>
+    </div>
+                
+<div id="agencyModal" class="agency-modal">
+        <div class="agency-content">
+            <span onclick="closeAgencyModal()" style="position:absolute; top:10px; right:20px; cursor:pointer; font-size:24px;">&times;</span>
+            <h3 style="color:#4db6ac;">Dati per il Regalo</h3>
+            <div class="agency-data-row"><strong>Agenzia Alimathà Viaggi</strong><br>Piazza Bologna 18, Potenza</div>
+            <div class="agency-data-row"><strong>IBAN:</strong> IT 00 X 00000 00000 000000000000</div>
+            <div class="agency-data-row"><strong>Causale:</strong> Umberto & Laura - 12/09/2026</div>
+            <div class="agency-data-row"><strong>Tel:</strong> +39 0971 XXXXXX</div>
+            <button class="btn-gold" style="width:100%; margin-top:10px;" onclick="closeAgencyModal()">Ho capito</button>
         </div>
     </div>
 </section>
@@ -506,32 +622,72 @@ const travelData = {
 
 function openTravelModal(tappa) {
     const data = travelData[tappa];
-    if(!data) return;
-
-    document.getElementById('modalTitle').innerText = data.title;
+document.getElementById('modalTitle').innerText = data.title;
     document.getElementById('modalDesc').innerText = data.desc;
-    
-    const gallery = document.getElementById('modalGallery');
-    gallery.innerHTML = data.imgs.map(img => `<img src="${img}" alt="Viaggio">`).join('');
-    
+    document.getElementById('modalGallery').innerHTML = data.imgs.map(img => `<img src="${img}">`).join('');
     document.getElementById('travelModal').style.display = 'flex';
-    document.getElementById('agencyInfo').style.display = 'none'; // Resetta il box agenzia
 }
 
 function closeTravelModal() {
     document.getElementById('travelModal').style.display = 'none';
 }
 
-function toggleAgencyInfo() {
-    const box = document.getElementById('agencyInfo');
-    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+function openAgencyModal() { document.getElementById('agencyModal').style.display = 'flex'; }
+
+function closeAgencyModal() { document.getElementById('agencyModal').style.display = 'none'; }
+
+// Logica Progresso (già fornita)
+const progressoAttuale = 40; 
+function updateProgressBar() {
+    const fill = document.getElementById('progress-fill');
+    const text = document.getElementById('percent-text');
+    const closedMsg = document.getElementById('list-closed-msg');
+    const actionButtons = document.querySelectorAll('.btn-gold'); // Seleziona i bottoni di contribuzione
+
+    // Anima la barra
+    setTimeout(() => {
+        fill.style.width = progressoAttuale + "%";
+        text.innerText = progressoAttuale + "%";
+        fill.innerText = progressoAttuale >= 10 ? progressoAttuale + "%" : "";
+    }, 500);
+animatePercent(progressoAttuale);
+
+    // Controllo chiusura lista
+    if (progressoAttuale >= 100) {
+        closedMsg.style.display = "block";
+        
+        // Disabilita o nasconde i tasti "Regala un'emozione"
+        actionButtons.forEach(btn => {
+            if (btn.innerText.includes("Regala") || btn.innerText.includes("Contribuisci")) {
+                btn.style.display = "none"; 
+            }
+        });
+
+        // Impedisce l'apertura della modale agenzia anche dai puntini mappa
+        window.openAgencyModal = function() {
+            alert("La lista è stata completata! Grazie mille per il pensiero.");
+        };
+    }
 }
 
-// Chiudi modale se clicchi fuori dal riquadro bianco
-window.onclick = function(event) {
-    const modal = document.getElementById('travelModal');
-    if (event.target == modal) closeTravelModal();
+// Avvia la funzione al caricamento della pagina
+window.addEventListener('DOMContentLoaded', updateProgressBar);
+
+function animatePercent(target) {
+    let current = 0;
+    const duration = 2000; // 2 secondi
+    const stepTime = Math.abs(Math.floor(duration / target));
+    const timer = setInterval(() => {
+        current++;
+        document.getElementById('percent-text').innerText = current + "%";
+        if (current >= target) clearInterval(timer);
+    }, stepTime);
 }
+
+// Chiamala dentro updateProgressBar()
+animatePercent(progressoAttuale);
+
+
     </script>
 </body>
 </html>
