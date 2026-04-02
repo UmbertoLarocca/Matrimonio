@@ -113,10 +113,10 @@
         .count-number { display: block; font-size: 2.5rem; font-weight: bold; font-family: 'Playfair Display', serif; }
         .count-label { display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; opacity: 0.8; }
 
-        .grid-location { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; width: 100%; max-width: 1200px; margin-top: 40px; }
-        .card-info { 
-            background: white; padding: 40px 30px; border-radius: 25px; 
-            box-shadow: 0 15px 45px rgba(144, 164, 174, 0.12); 
+        .grid-location { display: flez; grid-template-columns: 1fr 1fr 1fr; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; max-width: 1200px; margin-top: 40px auto 0; }
+  .card-info { 
+    background: white; padding: 40px 30px; border-radius: 25px; 
+    box-shadow: 0 15px 45px rgba(144, 164, 174, 0.12); flex: 1; 
             text-align: center; width: 100%; display: flex; flex-direction: column; justify-content: space-between;
         }
         .card-icon { width: 45px; height: 45px; margin: 0 auto 20px; background-size: contain; background-repeat: no-repeat; background-position: center; }
@@ -443,10 +443,18 @@
 .sidebar { left: -260px; }
 .sidebar.active { left: 0; }
 .main-content { margin-left: 0; width: 100%; }
+.grid-location { flex-direction: column; align-items: center; }
+.card-info {
+        width: 100% !important;
+        max-width: 100%;
+        min-width: 0;
+        margin-bottom: 20px;
+    }
 section { 
         padding: 80px 20px !important; /* Forza l'azzeramento del margine di 300px del PC */
         width: 100% !important;
         margin-left: 0 !important;
+        overflow: hidden;
     }
 #home h1 { font-size: 3.5rem; }
 
