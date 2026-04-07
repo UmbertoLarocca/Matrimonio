@@ -17,10 +17,11 @@
             color: #455a64; 
             display: flex; 
             min-height: 100vh;
-            overflow-x: hidden;
             margin: 0;
             padding: 0;
-            position: relative;
+            max-width: 100vw;
+            overflow-x: hidden;
+            position: relative; 
         }
         
         h1, h2, h3 { font-family: 'Playfair Display', serif; font-weight: 700; }
@@ -337,13 +338,16 @@
     align-items: center;
     z-index: 2000 !important;
     padding: 20px;
+    overflow-y: auto; /* Permette alla modale intera di scorrere se necessario */
+    -webkit-overflow-scrolling: touch; /* Rende lo scroll fluido su iOS */
 }
 
 .modal-content {
     background: white;
     width: 95%;
-    max-width: 900px;
-    max-height: 90vh;
+    max-width: 860px;
+    margin: 20px auto;  /*Margine per non toccare i bordi verticali*/
+    max-height: calc(100vh - 40px); /* Altezza massima dimanica*/
     border-radius: 25px;
     overflow-y: auto;
     overflow: hidden;
@@ -352,6 +356,7 @@
     flex-direction: column;
     animation: slideUp 0.4s ease-out;
     padding-bottom: 20px;
+    overflow-y: auto; /* Abilita lo scorrimento interno */
     box-shadow: 0 20px 50px rgba(0,0,0,0.3);
     -webkit-overflow-scrolling: touch;
 }
@@ -372,6 +377,10 @@
 @keyframes slideUp {
     from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+}
+
+body.modal-open {
+    overflow: hidden; /* Blocca lo scroll del sito sotto la modale */
 }
 
 .modal-close {
@@ -468,12 +477,13 @@
         margin-bottom: 20px;
     }
 section { 
-        padding: 80px 20px !important; /* Forza l'azzeramento del margine di 300px del PC */
+        padding: 60px 15px !important; /* Forza l'azzeramento del margine di 300px del PC */
         width: 100% !important;
-        margin-left: 0 !important;
+        margin: 0 !important;
         overflow: hidden;
+        box-sizing: border-box;
     }
-#home h1 { font-size: 3.5rem; }
+#home h1 { font-size: 3.5rem;  }
 
 .map-container-desktop { display: none !important; } 
 .carousel-wrapper { display: block !important; }/* Nascondiamo la mappa problematica */
@@ -839,6 +849,9 @@ modalGallery.onscroll = () => {
 
 
 document.getElementById('travelModal').style.display = 'flex';
+document.body.classList.add('modal-open');
+// Reset dello scroll interno ogni volta che si apre
+ document.querySelector('.modal-content').scrollTop = 0;
 }
 
 // Inizializzazione Dots per Mobile al caricamento
@@ -871,6 +884,7 @@ const sezioneViaggio = document.getElementById('viaggio');
 
 function closeTravelModal() {
     document.getElementById('travelModal').style.display = 'none';
+    document.body.classList.remove('modal-open'); // Riabilita lo sfondo
 }
 
 function openAgencyModal() { 
