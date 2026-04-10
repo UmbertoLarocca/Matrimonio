@@ -86,7 +86,14 @@
             position: relative; 
             scroll-margin-top: -50px;
         }
-
+/* Applica l'immagine a tutte le sezioni TRANNE la home */
+section:not(#home) {
+            background:  
+                url('https://imgur.com/wY4jNH1.png') no-repeat center center;
+            background-size: cover;
+            background-attachment: fixed; /* Effetto parallasse elegante */
+}
+        
         #home { 
             background: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)), 
                 url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1600&q=80') no-repeat center center; 
