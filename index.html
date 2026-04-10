@@ -835,11 +835,11 @@ document.getElementById('modalTitle').innerText = data.title;
 document.getElementById('modalDesc').innerText = data.desc;
     
 // Forse si può cancellare
-const gallery = document.getElementById('modalGallery').innerHTML = data.imgs.map(img => `<img src="${img}">`).join('');
+const modalGallery = document.getElementById('modalGallery').innerHTML = data.imgs.map(img => `<img src="${img}">`).join('');
 
 createDots('modalDots', data.imgs.length, 'modalGallery');
 
-gallery.scrollLeft = 0;
+modalGallery.scrollLeft = 0;
     document.querySelector('.modal-content').scrollTop = 0;
 
 const modalGallery = document.getElementById('modalGallery');
