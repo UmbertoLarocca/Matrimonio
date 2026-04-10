@@ -835,14 +835,12 @@ document.getElementById('modalTitle').innerText = data.title;
 document.getElementById('modalDesc').innerText = data.desc;
     
 // Forse si può cancellare
-const modalGallery = document.getElementById('modalGallery');
-modalGallery.innerHTML = data.imgs.map(img => `<img src="${img}">`).join('');
+const modalGallery = document.getElementById('modalGallery').innerHTML = data.imgs.map(img => `<img src="${img}">`).join('');
 
 createDots('modalDots', data.imgs.length, 'modalGallery');
 
 modalGallery.scrollLeft = 0;
-const modalContent = document.querySelector('.modal-content');
-modalContent.scrollTop = 0;
+    document.querySelector('.modal-content').scrollTop = 0;
 
 const modalGallery = document.getElementById('modalGallery');
 modalGallery.onscroll = () => {
@@ -855,6 +853,7 @@ document.body.classList.add('modal-open');
 // Reset dello scroll interno ogni volta che si apre
  document.querySelector('.modal-content').scrollTop = 0;
 }
+
 
 // Inizializzazione Dots per Mobile al caricamento
 // Gestione inizializzazione, scroll e progress bar
