@@ -607,7 +607,7 @@ section#viaggio { padding: 80px 20px; }
        <section id="viaggio">
     <div class="gift-badge">🎁 Qui puoi regalarci un pezzo di viaggio</div>
     <h2>Il Nostro Viaggio di Nozze</h2>
-    <p style="margin-bottom: 10px; color: #546e7a; font-size: 1.15rem; font-weight: 600; max-width: 650px;">Se vuoi farci un regalo, scegli una tappa del nostro itinerario e contribuisci a renderla indimenticabile!</p>
+    <p style="margin-bottom: 10px; color: #546e7a; font-size: 1.15rem; font-weight: 600; max-width: 650px; text-align: center;">Se vuoi farci un regalo, scegli una tappa del nostro itinerario e contribuisci a renderla indimenticabile!</p>
     <p style="margin-bottom: 10px; color: #78909c;">Accompagnaci nella nostra esperienza a Singapore, Malesia e Maldive!</p>
     <p style="margin-bottom: 30px; color: #78909c;">Tocca le tappe per sognare insieme a noi</p>
            
@@ -705,7 +705,7 @@ section#viaggio { padding: 80px 20px; }
          <section id="rsvp">
             <h2>Conferma la tua presenza</h2>
             <div class="card-info" style="max-width: 650px;margin: 0 auto; line-height: 1.8;">
-                <p> <strong>Compila il questionario qui sotto per comunicarci:</strong>.</p>
+                <p> <strong>Compila il questionario qui sotto per comunicarci:</strong></p>
                 <ul style="list-style: none; padding: 0; margin: 10px 0; color: #607d8b; text-align: center; display: inline-block;">
                     <li>👤 Nomi e numero partecipanti</li>
                     <li>🍽️ Intolleranze o allergie</li>
@@ -845,7 +845,18 @@ window.onclick = function(event) {
         closeAgencyModal();
     }
 }
-
+// Intercetta il tasto/gesto "indietro" dello smartphone per chiudere le modali
+// invece di far uscire l'utente dal sito
+window.addEventListener('popstate', () => {
+    const agencyModal = document.getElementById('agencyModal');
+    const travelModal = document.getElementById('travelModal');
+    if (agencyModal.style.display === 'flex') {
+        agencyModal.style.display = 'none';
+    } else if (travelModal.style.display === 'flex') {
+        travelModal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+    }
+});
 
 const travelData = {
     'maldive': {
@@ -904,7 +915,8 @@ modalGallery.onscroll = () => {
 document.getElementById('travelModal').style.display = 'flex';
 document.body.classList.add('modal-open');
 // Reset dello scroll interno ogni volta che si apre
- document.querySelector('.modal-content').scrollTop = 0;
+document.querySelector('.modal-content').scrollTop = 0;
+history.pushState({ modal: 'travel' }, '');
 }
 
 // Inizializzazione Dots per Mobile al caricamento
@@ -938,14 +950,17 @@ const sezioneViaggio = document.getElementById('viaggio');
 function closeTravelModal() {
     document.getElementById('travelModal').style.display = 'none';
     document.body.classList.remove('modal-open'); // Riabilita lo sfondo
+    if (history.state && history.state.modal === 'travel') {history.back();}
 }
 
 function openAgencyModal() { 
     document.getElementById('agencyModal').style.display = 'flex'; 
+    history.pushState({ modal: 'agency' }, '');
 }
 
 function closeAgencyModal() { 
     document.getElementById('agencyModal').style.display = 'none'; 
+     if (history.state && history.state.modal === 'agency') {history.back();}
 }
 
 function updateProgressBar() {
