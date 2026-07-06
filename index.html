@@ -84,7 +84,7 @@
             justify-content: center; 
             border-bottom: 1px solid #eceff1; 
             position: relative; 
-            scroll-margin-top: -50px;
+            scroll-margin-top: 0px;
         }
         
 /* Applica l'immagine a tutte le sezioni TRANNE la home */
@@ -147,6 +147,25 @@ section:not(#home) {
 
 /* --- LUNA DI MIELE --- */
 /* --- SEZIONE VIAGGIO REVISIONATA --- */
+/* Badge che evidenzia la sezione regalo */
+.gift-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #4db6ac, #80cbc4);
+    color: white;
+    padding: 10px 28px;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 22px;
+    box-shadow: 0 8px 22px rgba(77, 182, 172, 0.35);
+    animation: pulse-badge 2.2s ease-in-out infinite;
+}
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+}
+        
 #viaggio { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 40px 100px 300px; overflow: hidden; }
 
 /* --- PROGRESS BAR VIAGGIO --- */
