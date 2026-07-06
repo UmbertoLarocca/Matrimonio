@@ -854,7 +854,8 @@ document.getElementById('modalTitle').innerText = data.title;
 document.getElementById('modalDesc').innerText = data.desc;
     
 // Forse si può cancellare
-const gallery = document.getElementById('modalGallery').innerHTML = data.imgs.map(img => `<img src="${img}">`).join('');
+const gallery = document.getElementById('modalGallery')
+    gallery.innerHTML = data.imgs.map(img => `<img src="${img}">`).join('');
 
 createDots('modalDots', data.imgs.length, 'modalGallery');
 
