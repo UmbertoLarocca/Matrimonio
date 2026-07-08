@@ -8,7 +8,7 @@
    /*Anteprima WA
     <meta property="og:title" content="Umberto & Laura - 12 Settembre 2026">
     <meta property="og:description" content="Tutte le informazioni sul nostro matrimonio: programma, location e il nostro viaggio di nozze.">
-    <meta property="og:image" content="https://i.imgur.com/wY4jNH1.png">  */ posso aggiungere link https://i.imgur.com/MLX6vNP.png
+    <meta property="og:image" content="https://i.imgur.com/MLX6vNP.png">
     <meta property="og:url" content="https://umbertolarocca.github.io/Matrimonio/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
@@ -71,7 +71,7 @@
         .hamburger { 
             display: none; 
             position: fixed; 
-            top: 20px; right: 20px; 
+            top: 20px; left: 20px; 
             z-index: 1000; 
             cursor: pointer; 
             background: #ffffff; 
@@ -636,7 +636,7 @@ section#viaggio { padding: 80px 20px; }
     
     <div class="map-container-desktop">
         <div class="honey-wrapper">
-            <img src="https://imgur.com/k0YiPLd.jpg" class="honey-map">
+            <img src="https://imgur.com/k0YiPLd.jpg" class="honey-map" loading="lazy">
             
             <div class="map-point pt-Atollo di Ari, Maldive" onclick="openTravelModal('Atollo di Ari, Maldive')"><div class="radar"></div></div>
             <div class="map-point pt-kl" onclick="openTravelModal('kl')"><div class="radar"></div></div>
@@ -649,30 +649,30 @@ section#viaggio { padding: 80px 20px; }
 <div class="carousel-wrapper">
     <div class="journey-carousel-mobile" id="mainCarousel">
         <div class="journey-card">
-            <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=500" alt="Atollo di Ari, Maldive" onclick="openTravelModal('Atollo di Ari, Maldive')">
+            <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=500" alt="Atollo di Ari, Maldive" onclick="openTravelModal('Atollo di Ari, Maldive')" loading="lazy">
             <div class="card-content"> <h3>Atollo di Ari, Maldive</h3> <button class="btn-gold" onclick="openTravelModal('Atollo di Ari, Maldive')">Scopri la tappa</button> </div>
 </div>
      <div class="journey-card">
-     <img src="https://img.static-kl.com/transform/1f159175-0757-4f9e-a9a8-ec6dbd5bce68/?io=transform:fill,width:1920&consumerid=bwp" alt="Kuala Lumpur" onclick="openTravelModal('kl')">
+     <img src="https://img.static-kl.com/transform/1f159175-0757-4f9e-a9a8-ec6dbd5bce68/?io=transform:fill,width:1920&consumerid=bwp" alt="Kuala Lumpur" onclick="openTravelModal('kl')" loading="lazy">
             <div class="card-content"> <h3>Kuala Lumpur</h3> <button class="btn-gold" onclick="openTravelModal('kl')">Scopri la tappa</button> </div>
         </div>
 
         <div class="journey-card">
-            <img src="https://assets.puzzlefactory.com/puzzle/339/691/original.webp" alt="Malacca" onclick="openTravelModal('malacca')">
+            <img src="https://assets.puzzlefactory.com/puzzle/339/691/original.webp" alt="Malacca" onclick="openTravelModal('malacca')" loading="lazy">
             <div class="card-content">
 <h3>Malacca</h3>
 <button class="btn-gold" onclick="openTravelModal('malacca')">Scopri la tappa</button> </div>
         </div>
 
         <div class="journey-card">
-            <img src="https://i.imgur.com/A0WLYtt.jpeg" alt="Singapore" onclick="openTravelModal('sg1')">
+            <img src="https://i.imgur.com/A0WLYtt.jpeg" alt="Singapore" onclick="openTravelModal('sg1')" loading="lazy">
 <div class="card-content">
 <h3>Singapore</h3>
 <button class="btn-gold" onclick="openTravelModal('sg1')">Scopri la tappa</button> </div>
         </div>
 
         <div class="journey-card">
-         <img src="https://i.imgur.com/8lU5U7b.jpeg" alt="Mandai Wildlife Reserve" onclick="openTravelModal('sg2')">
+         <img src="https://i.imgur.com/8lU5U7b.jpeg" alt="Mandai Wildlife Reserve" onclick="openTravelModal('sg2')" loading="lazy">
 <div class="card-content">
 <h3>Mandai Wildlife Reserve</h3>
 <button class="btn-gold" onclick="openTravelModal('sg2')">Scopri la tappa</button> </div>
@@ -802,8 +802,23 @@ section#viaggio { padding: 80px 20px; }
             }
             requestAnimationFrame(animate);
         }
-        setInterval(createPetal, 450);
+        let petalInterval = null;
+        function startPetals() { if (!petalInterval) petalInterval = setInterval(createPetal, 450); }
+        function stopPetals() { clearInterval(petalInterval); petalInterval = null; }
 
+        const homeSection = document.getElementById('home');
+        if (homeSection) {
+            const petalObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && document.visibilityState === 'visible') startPetals();
+                    else stopPetals();
+                });
+            }, { threshold: 0.1 });
+            petalObserver.observe(homeSection);
+        }
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') stopPetals();
+        });
         document.querySelectorAll('.sidebar a').forEach(link => {
             link.addEventListener('click', () => { if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('active'); });
         });
@@ -893,7 +908,7 @@ const travelData = {
     },
 'sg1': {
         title: "Singapore",
-        desc: "Descrizione Singapore",
+        desc: "Uno skyline futuristico tra giardini sospesi e la scintillante baia di Marina Bay, dove tradizione e modernità convivono in perfetta armonia.",
         imgs: ["https://i.imgur.com/A0WLYtt.jpeg", "https://i.imgur.com/VKo2M5F.png", "https://i.imgur.com/098l3rE.jpeg","https://i.imgur.com/X24daR8.jpeg"]
     },
 'sg2': {
@@ -914,7 +929,7 @@ document.getElementById('modalDesc').innerText = data.desc;
     
 // Forse si può cancellare
 const gallery = document.getElementById('modalGallery')
-    gallery.innerHTML = data.imgs.map(img => `<img src="${img}">`).join('');
+    gallery.innerHTML = data.imgs.map(img => `<img src="${img}" loading="lazy">`).join('');
 
 createDots('modalDots', data.imgs.length, 'modalGallery');
 
