@@ -173,6 +173,14 @@ section:not(#home) {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.04); }
 }
+
+    .section-monogram {
+    display: block;
+    width: 54px;
+    height: auto;
+    margin: 0 auto;
+    opacity: 0.85;
+}    
         
 #viaggio { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 40px 100px 300px; overflow: hidden; }
 
@@ -503,7 +511,7 @@ body.modal-open {
         }
         
          /* Coordinate precise punti rossi 1HMhML5 */
-        .pt-Atollo di Ari, Maldive { top: 80.5%; left: 6.0%; }
+        .pt-maldive { top: 80.5%; left: 6.0%; }
         .pt-kl { top: 78.0%; left: 63.2%; }
         .pt-malacca { top: 80.2%; left: 64.5%; }
         .pt-singapore1 { top: 82.0%; left: 66.4%; }
@@ -516,7 +524,7 @@ body.modal-open {
             transition: 0.4s; margin-top: 25px; letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(128, 203, 196, 0.3);
         }
-        .btn-gold:hover { background-color: #4db6ac; transform: scale(1.05); }
+        .btn-gold:hover { background-color: #4db6ac; transform: scale(1.06) translateY(-3px); box-shadow: 0 10px 22px rgba(77,182,172,0.4); }
 
         .petal { position: absolute; background-size: contain; background-repeat: no-repeat; opacity: 0.6; pointer-events: none; z-index: 50; will-change: transform; }
 
@@ -614,6 +622,8 @@ section#viaggio { padding: 80px 20px; }
             </div>
         </section>
 
+         <img src="https://i.imgur.com/MLX6vNP.png" alt="" class="section-monogram" aria-hidden="true">
+
        <section id="viaggio">
     <div class="gift-badge">🎁 Qui puoi regalarci un pezzo di viaggio</div>
     <h2>Il Nostro Viaggio di Nozze</h2>
@@ -637,7 +647,7 @@ section#viaggio { padding: 80px 20px; }
         <div class="honey-wrapper">
             <img src="https://imgur.com/k0YiPLd.jpg" class="honey-map" loading="lazy">
             
-            <div class="map-point pt-Atollo di Ari, Maldive" onclick="openTravelModal('Atollo di Ari, Maldive')"><div class="radar"></div></div>
+            <div class="map-point pt-maldive" onclick="openTravelModal('Atollo di Ari, Maldive')"><div class="radar"></div></div>
             <div class="map-point pt-kl" onclick="openTravelModal('kl')"><div class="radar"></div></div>
             <div class="map-point pt-malacca" onclick="openTravelModal('malacca')"><div class="radar"></div></div>
             <div class="map-point pt-singapore1" onclick="openTravelModal('sg1')"><div class="radar"></div></div>
@@ -926,14 +936,13 @@ if (!data) return;
 document.getElementById('modalTitle').innerText = data.title;
 document.getElementById('modalDesc').innerText = data.desc;
     
-// Forse si può cancellare
+
 const gallery = document.getElementById('modalGallery')
-    gallery.innerHTML = data.imgs.map(img => `<img src="${img}" loading="lazy">`).join('');
+gallery.innerHTML = data.imgs.map(img => `<img src="${img}" loading="lazy">`).join('');
 
 createDots('modalDots', data.imgs.length, 'modalGallery');
 
-gallery.scrollLeft = 0;
-    document.querySelector('.modal-content').scrollTop = 0;
+document.querySelector('.modal-content').scrollTop = 0;
 
 const modalGallery = document.getElementById('modalGallery');
 modalGallery.onscroll = () => {
@@ -943,6 +952,21 @@ modalGallery.onscroll = () => {
 
 document.getElementById('travelModal').style.display = 'flex';
 document.body.classList.add('modal-open');
+
+requestAnimationFrame(() => { gallery.scrollLeft = 0; });
+
+let modalScrollTimeout;
+gallery.onscroll = () => {
+    const index = Math.round(gallery.scrollLeft / gallery.offsetWidth);
+    const realCount = data.imgs.length;
+    updateDots('modalDots', index >= realCount ? 0 : index);
+    clearTimeout(modalScrollTimeout);
+    modalScrollTimeout = setTimeout(() => {
+        if (index >= realCount) {
+            gallery.scrollTo({ left: 0, behavior: 'auto' });
+        }
+    }, 200);
+};
 // Reset dello scroll interno ogni volta che si apre
 document.querySelector('.modal-content').scrollTop = 0;
 history.pushState({ modal: 'travel' }, '');
