@@ -957,7 +957,13 @@ window.addEventListener('DOMContentLoaded', () => {
         createDots('mainDots', cardCount, 'mainCarousel');
         let mainScrollTimeout;
         mainCarousel.addEventListener('scroll', () => {
-            const index = Math.round(mainCarousel.scrollLeft / mainCarousel.offsetWidth);
+            const cards = Array.from(mainCarousel.querySelectorAll('.journey-card'));
+            let index = 0;
+            let minDist = Infinity;
+            cards.forEach((card, i) => {
+                const dist = Math.abs(card.offsetLeft - mainCarousel.scrollLeft);
+                if (dist < minDist) { minDist = dist; index = i; }
+            });
             updateDots('mainDots', index >= cardCount ? 0 : index);
             clearTimeout(mainScrollTimeout);
             mainScrollTimeout = setTimeout(() => {
