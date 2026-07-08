@@ -172,16 +172,7 @@ section:not(#home) {
 @keyframes pulse-badge {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.04); }
-}
-
-    .section-monogram {
-    display: block;
-    width: 54px;
-    height: auto;
-    margin: 0 auto;
-    opacity: 0.85;
-}    
-        
+}   
 #viaggio { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 40px 100px 300px; overflow: hidden; }
 
 /* --- PROGRESS BAR VIAGGIO --- */
@@ -292,19 +283,30 @@ section:not(#home) {
 /* Desktop: Mappa Interattiva */
 .map-container-desktop { display: block; width: 100%; max-width: 1000px; margin: 0 auto; position: relative; }
 
-/* Mobile: Lista a scorrimento (Carousel) */
-.journey-carousel-mobile { display: flex; width: 100%; overflow-x: auto; padding: 20px 0; scroll-snap-type: x mandatory; gap: 20px; scrollbar-width: none; }
+/* Mobile: Carosello 3D "a sfera" */
+.carousel-3d {
+    position: relative;
+    width: 100%;
+    height: 430px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    perspective: 1200px;
+    touch-action: pan-y;
+}
 
-/* Card per Mobile */
-.journey-card {
-    min-width: 85%;
+.carousel-3d-card {
+    position: absolute;
+    width: 78%;
+    max-width: 320px;
     background: white;
     border-radius: 25px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    scroll-snap-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.5s ease, opacity 0.5s ease;
 }
 
 /* Contenitore relativo per posizionare frecce e puntini */
@@ -362,16 +364,13 @@ section:not(#home) {
 .next-arrow { right: 10px; }
 
 /* Nascondiamo la scrollbar nativa per un look pulito */
-.journey-carousel-mobile, .modal-gallery {
+.modal-gallery {
     scrollbar-width: none; /* Firefox */
 }
-.journey-carousel-mobile::-webkit-scrollbar, .modal-gallery::-webkit-scrollbar {display: none; /* Chrome/Safari */}
+.modal-gallery::-webkit-scrollbar {display: none; /* Chrome/Safari */}
 
-.journey-card img { width: 100%; height: 200px; object-fit: cover; cursor: pointer; }
+.carousel-3d-card img { width: 100%; height: 200px; object-fit: cover; pointer-events: none; }
 .card-content { padding: 20px; text-align: center; }
-
-/* Nasconde il carousel e le card singole su PC */
-.journey-carousel-mobile {display: none;}
 
 .honey-wrapper { position: relative; width: 100%; max-width: 1000px; margin: 0 auto; }
 .honey-map { width: 100%; display: block; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 2px solid white; }
@@ -551,7 +550,7 @@ section {
 
 .map-container-desktop { display: none !important; } 
 .carousel-wrapper { display: block !important; }/* Nascondiamo la mappa problematica */
-.journey-carousel-mobile { display: flex !important; }
+.carousel-3d { display: flex !important; }
 section#viaggio { padding: 80px 20px; }
 }
 
@@ -621,9 +620,6 @@ section#viaggio { padding: 80px 20px; }
                 </div>
             </div>
         </section>
-
-         <img src="https://i.imgur.com/MLX6vNP.png" alt="" class="section-monogram" aria-hidden="true">
-
        <section id="viaggio">
     <div class="gift-badge">🎁 Qui puoi regalarci un pezzo di viaggio</div>
     <h2>Il Nostro Viaggio di Nozze</h2>
@@ -656,42 +652,28 @@ section#viaggio { padding: 80px 20px; }
     </div>
 
 <div class="carousel-wrapper">
-    <div class="journey-carousel-mobile" id="mainCarousel">
-        <div class="journey-card">
-            <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=500" alt="Atollo di Ari, Maldive" onclick="openTravelModal('Atollo di Ari, Maldive')" loading="lazy">
+    <div class="carousel-3d" id="carousel3d">
+        <div class="carousel-3d-card" data-tappa="Atollo di Ari, Maldive">
+            <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=500" alt="Atollo di Ari, Maldive" loading="lazy">
             <div class="card-content"> <h3>Atollo di Ari, Maldive</h3> <button class="btn-gold" onclick="openTravelModal('Atollo di Ari, Maldive')">Scopri la tappa</button> </div>
-</div>
-     <div class="journey-card">
-     <img src="https://img.static-kl.com/transform/1f159175-0757-4f9e-a9a8-ec6dbd5bce68/?io=transform:fill,width:1920&consumerid=bwp" alt="Kuala Lumpur" onclick="openTravelModal('kl')" loading="lazy">
+        </div>
+        <div class="carousel-3d-card" data-tappa="kl">
+            <img src="https://img.static-kl.com/transform/1f159175-0757-4f9e-a9a8-ec6dbd5bce68/?io=transform:fill,width:1920&consumerid=bwp" alt="Kuala Lumpur" loading="lazy">
             <div class="card-content"> <h3>Kuala Lumpur</h3> <button class="btn-gold" onclick="openTravelModal('kl')">Scopri la tappa</button> </div>
         </div>
-
-        <div class="journey-card">
-            <img src="https://assets.puzzlefactory.com/puzzle/339/691/original.webp" alt="Malacca" onclick="openTravelModal('malacca')" loading="lazy">
-            <div class="card-content">
-<h3>Malacca</h3>
-<button class="btn-gold" onclick="openTravelModal('malacca')">Scopri la tappa</button> </div>
+        <div class="carousel-3d-card" data-tappa="malacca">
+            <img src="https://assets.puzzlefactory.com/puzzle/339/691/original.webp" alt="Malacca" loading="lazy">
+            <div class="card-content"> <h3>Malacca</h3> <button class="btn-gold" onclick="openTravelModal('malacca')">Scopri la tappa</button> </div>
         </div>
-
-        <div class="journey-card">
-            <img src="https://i.imgur.com/A0WLYtt.jpeg" alt="Singapore" onclick="openTravelModal('sg1')" loading="lazy">
-<div class="card-content">
-<h3>Singapore</h3>
-<button class="btn-gold" onclick="openTravelModal('sg1')">Scopri la tappa</button> </div>
+        <div class="carousel-3d-card" data-tappa="sg1">
+            <img src="https://i.imgur.com/A0WLYtt.jpeg" alt="Singapore" loading="lazy">
+            <div class="card-content"> <h3>Singapore</h3> <button class="btn-gold" onclick="openTravelModal('sg1')">Scopri la tappa</button> </div>
         </div>
-
-        <div class="journey-card">
-         <img src="https://i.imgur.com/8lU5U7b.jpeg" alt="Mandai Wildlife Reserve" onclick="openTravelModal('sg2')" loading="lazy">
-<div class="card-content">
-<h3>Mandai Wildlife Reserve</h3>
-<button class="btn-gold" onclick="openTravelModal('sg2')">Scopri la tappa</button> </div>
+        <div class="carousel-3d-card" data-tappa="sg2">
+            <img src="https://i.imgur.com/8lU5U7b.jpeg" alt="Mandai Wildlife Reserve" loading="lazy">
+            <div class="card-content"> <h3>Mandai Wildlife Reserve</h3> <button class="btn-gold" onclick="openTravelModal('sg2')">Scopri la tappa</button> </div>
         </div>
-
-        <div class="journey-card clone-card" aria-hidden="true">
-            <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=500" alt="Atollo di Ari, Maldive" onclick="openTravelModal('Atollo di Ari, Maldive')">
-            <div class="card-content"> <h3>Atollo di Ari, Maldive</h3> <button class="btn-gold" onclick="openTravelModal('Atollo di Ari, Maldive')">Scopri la tappa</button> </div>
-        </div>
-</div>
+    </div>
     <div class="dots-container" id="mainDots"></div>
 </div>
 
@@ -935,20 +917,13 @@ const data = travelData[tappa];
 if (!data) return;
 document.getElementById('modalTitle').innerText = data.title;
 document.getElementById('modalDesc').innerText = data.desc;
-    
 
-const gallery = document.getElementById('modalGallery')
-gallery.innerHTML = data.imgs.map(img => `<img src="${img}" loading="lazy">`).join('');
+const gallery = document.getElementById('modalGallery');
+gallery.innerHTML = data.imgs.map(img => `<img src="${img}" loading="lazy">`).join('') + `<img src="${data.imgs[0]}" loading="lazy" aria-hidden="true">`;
 
 createDots('modalDots', data.imgs.length, 'modalGallery');
 
 document.querySelector('.modal-content').scrollTop = 0;
-
-const modalGallery = document.getElementById('modalGallery');
-modalGallery.onscroll = () => {
-    const index = Math.round(modalGallery.scrollLeft / modalGallery.offsetWidth);
-    updateDots('modalDots', index); }    
-
 
 document.getElementById('travelModal').style.display = 'flex';
 document.body.classList.add('modal-open');
@@ -967,36 +942,60 @@ gallery.onscroll = () => {
         }
     }, 200);
 };
-// Reset dello scroll interno ogni volta che si apre
-document.querySelector('.modal-content').scrollTop = 0;
 history.pushState({ modal: 'travel' }, '');
 }
 
-// Inizializzazione Dots per Mobile al caricamento
-// Gestione inizializzazione, scroll e progress bar
+// Inizializzazione carosello 3D "a sfera" e progress bar
 window.addEventListener('DOMContentLoaded', () => {
-    const mainCarousel = document.getElementById('mainCarousel');
-    if (mainCarousel) {
-        const cardCount = mainCarousel.querySelectorAll('.journey-card:not(.clone-card)').length;
-        createDots('mainDots', cardCount, 'mainCarousel');
-        let mainScrollTimeout;
-        mainCarousel.addEventListener('scroll', () => {
-            const cards = Array.from(mainCarousel.querySelectorAll('.journey-card'));
-            let index = 0;
-            let minDist = Infinity;
+    const carousel3d = document.getElementById('carousel3d');
+    if (carousel3d) {
+        const cards = Array.from(carousel3d.querySelectorAll('.carousel-3d-card'));
+        const total = cards.length;
+        let carouselIndex = 0;
+
+        function renderCarousel() {
             cards.forEach((card, i) => {
-                const dist = Math.abs(card.offsetLeft - mainCarousel.scrollLeft);
-                if (dist < minDist) { minDist = dist; index = i; }
+                let offset = i - carouselIndex;
+                if (offset > total / 2) offset -= total;
+                if (offset < -total / 2) offset += total;
+                const absOffset = Math.abs(offset);
+                card.style.transform = `translateX(${offset * 60}%) scale(${Math.max(1 - absOffset * 0.18, 0.55)}) rotateY(${offset * -25}deg)`;
+                card.style.opacity = absOffset > 2 ? 0 : 1 - absOffset * 0.3;
+                card.style.zIndex = total - absOffset;
+                card.style.pointerEvents = absOffset > 2 ? 'none' : 'auto';
             });
-            updateDots('mainDots', index >= cardCount ? 0 : index);
-            clearTimeout(mainScrollTimeout);
-            mainScrollTimeout = setTimeout(() => {
-                if (index >= cardCount) {
-                    mainCarousel.scrollTo({ left: 0, behavior: 'auto' });
+            updateDots('mainDots', carouselIndex);
+        }
+
+        function goToCard(index) {
+            carouselIndex = ((index % total) + total) % total;
+            renderCarousel();
+        }
+
+        cards.forEach((card, i) => {
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.btn-gold')) return;
+                if (i === carouselIndex) {
+                    openTravelModal(card.dataset.tappa);
+                } else {
+                    goToCard(i);
                 }
-            }, 200);
-  });
-}
+            });
+        });
+
+        createDots('mainDots', total, null);
+        document.querySelectorAll('#mainDots .dot').forEach((dot, i) => { dot.onclick = () => goToCard(i); });
+
+        let touchStartX = 0;
+        carousel3d.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+        carousel3d.addEventListener('touchend', (e) => {
+            const deltaX = e.changedTouches[0].clientX - touchStartX;
+            if (deltaX < -40) goToCard(carouselIndex + 1);
+            else if (deltaX > 40) goToCard(carouselIndex - 1);
+        }, { passive: true });
+
+        renderCarousel();
+    }
 
 const sezioneViaggio = document.getElementById('viaggio');
     
