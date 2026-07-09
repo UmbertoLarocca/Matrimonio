@@ -527,6 +527,144 @@ body.modal-open {
 
         .petal { position: absolute; background-size: contain; background-repeat: no-repeat; opacity: 0.6; pointer-events: none; z-index: 50; will-change: transform; }
 
+/* --- GALLERIA CONDIVISA --- */
+.photo-upload-zone {
+    width: 100%;
+    max-width: 650px;
+    border: 2px dashed #80cbc4;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 40px 25px;
+    text-align: center;
+    margin: 0 auto 15px;
+    transition: 0.3s;
+}
+.photo-upload-zone.drag-over {
+    background: rgba(128, 203, 196, 0.15);
+    border-color: #4db6ac;
+}
+.photo-upload-zone p {
+    color: #607d8b;
+    margin-bottom: 20px;
+}
+.photo-upload-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.btn-photo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: #80cbc4;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: 'Lora', serif;
+    box-shadow: 0 4px 15px rgba(128, 203, 196, 0.3);
+}
+.btn-photo:hover { background-color: #4db6ac; transform: scale(1.05) translateY(-2px); }
+.btn-photo.secondary { background: #fff; color: #4db6ac; border: 2px solid #80cbc4; box-shadow: none; }
+.btn-photo.secondary:hover { background: #e0f2f1; }
+
+.upload-queue {
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.upload-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border-radius: 14px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+.upload-item img { width: 46px; height: 46px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.upload-item-info { flex: 1; min-width: 0; }
+.upload-item-name { font-size: 0.8rem; color: #546e7a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.upload-progress-bar { width: 100%; height: 6px; background: #eceff1; border-radius: 10px; overflow: hidden; margin-top: 5px; }
+.upload-progress-fill { height: 100%; width: 0%; background: #4db6ac; transition: width 0.3s; }
+.upload-item-status { font-size: 1.1rem; flex-shrink: 0; }
+.upload-item.error .upload-progress-fill { background: #e57373; }
+.upload-item.error .upload-item-name { color: #c62828; }
+
+.photo-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--gallery-thumb-size, 140px), 1fr));
+    gap: 8px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 25px auto 0;
+}
+.photo-gallery-grid img {
+    width: 100%;
+    height: var(--gallery-thumb-size, 140px);
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.25s;
+    display: block;
+    background: #e0f2f1;
+}
+.photo-gallery-grid img:hover { transform: scale(1.04); }
+.gallery-empty-msg, .gallery-loading-msg {
+    color: #90a4ae;
+    font-style: italic;
+    margin-top: 20px;
+    text-align: center;
+}
+.gallery-count {
+    color: #78909c;
+    font-size: 0.95rem;
+    margin-top: 25px;
+    text-align: center;
+}
+.gallery-locked-box {
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px dashed #80cbc4;
+    border-radius: 25px;
+    padding: 50px 30px;
+    color: #607d8b;
+}
+.gallery-locked-box p { margin-bottom: 8px; }
+
+.photo-lightbox {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 4000;
+    padding: 20px;
+}
+.photo-lightbox img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 10px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+.photo-lightbox .modal-close {
+    position: fixed;
+    top: 20px; right: 20px;
+}
+        
 @media (max-width: 768px) {
 .hamburger { display: block; }
 .sidebar { left: -260px; }
@@ -723,13 +861,40 @@ section#viaggio { padding: 80px 20px; }
             </div>
         </section>
 
-        <section id="foto">
-            <h2>Carica le tue Foto</h2>
-            <div class="card-info" style="max-width: 600px;">
-                <p>Aiutaci a ricordare ogni momento!</p>
-                <a href="#" class="btn-gold" target="_blank">Apri Galleria Foto</a>
+<section id="foto">
+    <h2>Galleria Condivisa</h2>
+    <p style="margin-bottom: 30px; color: #78909c; text-align: center; max-width: 550px;">Scatta o carica una foto del matrimonio: apparirà qui per tutti, senza bisogno di registrarti!</p>
+
+    <div id="galleryLockedMsg" class="gallery-locked-box" style="display:none;">
+        <div style="font-size:3rem; margin-bottom:15px;">🔒</div>
+        <p><strong>La galleria si sblocca il giorno del matrimonio!</strong></p>
+        <p style="font-size:0.9rem; opacity:0.85;">Torna qui il 12 Settembre 2026 per scattare e vedere le foto di tutti 💛</p>
+    </div>
+
+    <div id="galleryUnlockedContent">
+        <div class="photo-upload-zone" id="photoDropZone">
+            <p>📸 Trascina qui le foto oppure:</p>
+            <div class="photo-upload-buttons">
+                <button type="button" class="btn-photo" onclick="document.getElementById('cameraInput').click()">📷 Scatta una foto</button>
+                <button type="button" class="btn-photo secondary" onclick="document.getElementById('fileInput').click()">🖼️ Carica dalla galleria</button>
             </div>
-        </section>
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
+            <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
+        </div>
+
+        <div class="upload-queue" id="uploadQueue"></div>
+
+        <div class="photo-gallery-grid" id="photoGalleryGrid"></div>
+        <p class="gallery-loading-msg" id="galleryLoadingMsg">Caricamento foto in corso...</p>
+        <p class="gallery-empty-msg" id="galleryEmptyMsg" style="display:none;">Nessuna foto ancora... sii il primo a caricarne una! 💛</p>
+        <p class="gallery-count" id="galleryCount"></p>
+    </div>
+</section>
+
+<div id="photoLightbox" class="photo-lightbox" onclick="if(event.target===this) closePhotoLightbox()">
+    <span class="modal-close" onclick="closePhotoLightbox()">&times;</span>
+    <img id="photoLightboxImg" src="" alt="Foto matrimonio">
+</div>
 
         <section id="contatti" style="background-color: #f0f7f7; border-bottom: none;">
             <h2>Contatti</h2>
@@ -1049,6 +1214,213 @@ function updateProgressBar() {
     }
 }
 
+/* ============================================
+   GALLERIA CONDIVISA (upload + visualizzazione via Cloudinary)
+   ============================================
+   ISTRUZIONI PER L'ATTIVAZIONE:
+   1. Crea un account gratuito su https://cloudinary.com
+   2. Prendi il tuo "Cloud name" dal Dashboard e incollalo qui sotto in CLOUDINARY_CLOUD_NAME
+   3. Crea un Upload Preset "Unsigned" (Settings > Upload > Upload presets) e incolla il nome in CLOUDINARY_UPLOAD_PRESET
+   4. In Settings > Security, disattiva la voce "Resource list" (serve per mostrare la galleria pubblica)
+   ============================================ */
+const CLOUDINARY_CLOUD_NAME = 'meankqfy';
+const CLOUDINARY_UPLOAD_PRESET = 'Galleria Matrimonio';
+const CLOUDINARY_TAG = 'Matrimonio_Umberto&Laura_2026';
+
+/* Data di apertura della galleria: prima di questa data la sezione resta bloccata.
+   Per fare dei TEST prima del matrimonio, metti GALLERY_TEST_MODE a true qui sotto:
+   la galleria si sbloccherà subito, indipendentemente dalla data. Ricordati di
+   rimetterlo a false quando hai finito di testare! */
+const GALLERY_UNLOCK_DATE = new Date('2026-09-12T00:00:00');
+const GALLERY_TEST_MODE = true;
+
+function isGalleryUnlocked() {
+    return GALLERY_TEST_MODE || new Date() >= GALLERY_UNLOCK_DATE;
+}
+
+const cloudinaryConfigured = () =>
+    CLOUDINARY_CLOUD_NAME !== 'meankqfy' &&
+    CLOUDINARY_UPLOAD_PRESET !== 'Galleria Matrimonio';
+
+function initPhotoGallery() {
+    const dropZone = document.getElementById('photoDropZone');
+    const cameraInput = document.getElementById('cameraInput');
+    const fileInput = document.getElementById('fileInput');
+    const lockedMsg = document.getElementById('galleryLockedMsg');
+    const unlockedContent = document.getElementById('galleryUnlockedContent');
+    if (!dropZone) return;
+
+    if (!isGalleryUnlocked()) {
+        lockedMsg.style.display = 'block';
+        unlockedContent.style.display = 'none';
+        return;
+    }
+    lockedMsg.style.display = 'none';
+    unlockedContent.style.display = 'block';
+
+    cameraInput.addEventListener('change', (e) => handleFiles(e.target.files));
+    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+    ['dragenter', 'dragover'].forEach(evt => {
+        dropZone.addEventListener(evt, (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+        dropZone.addEventListener(evt, (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); });
+    });
+    dropZone.addEventListener('drop', (e) => {
+        if (e.dataTransfer.files && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+    });
+
+    loadPhotoGallery();
+    setInterval(loadPhotoGallery, 20000);
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') loadPhotoGallery();
+    });
+}
+
+function handleFiles(fileList) {
+    if (!isGalleryUnlocked()) return;
+    if (!cloudinaryConfigured()) {
+        alert('La galleria condivisa non è ancora configurata. Contatta chi gestisce il sito per attivarla (serve un account Cloudinary gratuito).');
+        return;
+    }
+    Array.from(fileList).forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        if (file.size > 15 * 1024 * 1024) {
+            alert(`"${file.name}" supera i 15MB e non può essere caricata.`);
+            return;
+        }
+        uploadPhoto(file);
+    });
+}
+
+function uploadPhoto(file) {
+    const queue = document.getElementById('uploadQueue');
+    const item = document.createElement('div');
+    item.className = 'upload-item';
+    const localUrl = URL.createObjectURL(file);
+    item.innerHTML = `
+        <img src="${localUrl}" alt="anteprima">
+        <div class="upload-item-info">
+            <div class="upload-item-name">${file.name}</div>
+            <div class="upload-progress-bar"><div class="upload-progress-fill"></div></div>
+        </div>
+        <div class="upload-item-status">⏳</div>
+    `;
+    queue.prepend(item);
+
+    const progressFill = item.querySelector('.upload-progress-fill');
+    const statusIcon = item.querySelector('.upload-item-status');
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`);
+
+    xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            progressFill.style.width = pct + '%';
+        }
+    });
+
+    xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+            progressFill.style.width = '100%';
+            statusIcon.textContent = '✅';
+            setTimeout(() => {
+                item.style.transition = 'opacity 0.5s';
+                item.style.opacity = '0';
+                setTimeout(() => item.remove(), 500);
+            }, 1500);
+            loadPhotoGallery();
+        } else {
+            item.classList.add('error');
+            statusIcon.textContent = '❌';
+        }
+    };
+    xhr.onerror = () => {
+        item.classList.add('error');
+        statusIcon.textContent = '❌';
+    };
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    formData.append('tags', CLOUDINARY_TAG);
+    xhr.send(formData);
+}
+
+let lastGalleryCount = -1;
+
+/* Restringe le miniature man mano che aumentano le foto, così anche con 300-400
+   scatti la sezione resta scorrevole e non diventa infinita. Modifica pure le
+   soglie qui sotto se vuoi miniature più grandi o più piccole. */
+function getThumbSize(count) {
+    if (count <= 40) return 160;
+    if (count <= 100) return 130;
+    if (count <= 200) return 100;
+    if (count <= 300) return 80;
+    return 65;
+}
+
+function loadPhotoGallery() {
+    const grid = document.getElementById('photoGalleryGrid');
+    const loadingMsg = document.getElementById('galleryLoadingMsg');
+    const emptyMsg = document.getElementById('galleryEmptyMsg');
+    const countLabel = document.getElementById('galleryCount');
+    if (!grid) return;
+
+    if (!cloudinaryConfigured()) {
+        loadingMsg.style.display = 'none';
+        emptyMsg.style.display = 'block';
+        emptyMsg.textContent = '⚙️ Galleria in fase di attivazione, torna a trovarci presto!';
+        return;
+    }
+
+    fetch(`https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/list/${CLOUDINARY_TAG}.json`)
+        .then(res => { if (!res.ok) throw new Error('network'); return res.json(); })
+        .then(data => {
+            loadingMsg.style.display = 'none';
+            const resources = (data.resources || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            if (resources.length === 0) {
+                emptyMsg.style.display = 'block';
+                emptyMsg.textContent = 'Nessuna foto ancora... sii il primo a caricarne una! 💛';
+                grid.innerHTML = '';
+                countLabel.textContent = '';
+                return;
+            }
+
+            emptyMsg.style.display = 'none';
+            if (resources.length !== lastGalleryCount) {
+                lastGalleryCount = resources.length;
+                document.documentElement.style.setProperty('--gallery-thumb-size', getThumbSize(resources.length) + 'px');
+                grid.innerHTML = resources.map(r => {
+                    const thumbUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/w_400,h_400,c_fill,q_auto,f_auto/v${r.version}/${r.public_id}.${r.format}`;
+                    const fullUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/w_1600,q_auto,f_auto/v${r.version}/${r.public_id}.${r.format}`;
+                    return `<img src="${thumbUrl}" loading="lazy" onclick="openPhotoLightbox('${fullUrl}')" alt="Foto matrimonio">`;
+                }).join('');
+            }
+            countLabel.textContent = `📷 ${resources.length} foto condivise finora`;
+        })
+        .catch(() => {
+            loadingMsg.style.display = 'none';
+            emptyMsg.style.display = 'block';
+            emptyMsg.textContent = 'Impossibile caricare la galleria al momento. Riprova tra poco.';
+        });
+}
+
+function openPhotoLightbox(url) {
+    document.getElementById('photoLightboxImg').src = url;
+    document.getElementById('photoLightbox').style.display = 'flex';
+    document.body.classList.add('modal-open');
+}
+function closePhotoLightbox() {
+    document.getElementById('photoLightbox').style.display = 'none';
+    document.body.classList.remove('modal-open');
+}
+
+window.addEventListener('DOMContentLoaded', initPhotoGallery);
+        
 function animatePercent(target) {
     let current = 0;
     const fill = document.getElementById('progress-fill');
