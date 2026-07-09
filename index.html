@@ -1239,7 +1239,7 @@ const CLOUDINARY_TAG = 'matrimonio_umberto_laura_2026';
    la galleria si sbloccherà subito, indipendentemente dalla data. Ricordati di
    rimetterlo a false quando hai finito di testare! */
 const GALLERY_UNLOCK_DATE = new Date('2026-09-12T00:00:00');
-const GALLERY_TEST_MODE = false;
+const GALLERY_TEST_MODE = true;
 
 function isGalleryUnlocked() {
     return GALLERY_TEST_MODE || new Date() >= GALLERY_UNLOCK_DATE;
