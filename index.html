@@ -1206,22 +1206,43 @@ function closeAgencyModal() {
      if (history.state && history.state.modal === 'agency') {history.back();}
 }
 
+/* Barra del regalo di nozze, collegata a una cella di Google Sheets.
+   ISTRUZIONI (vedi messaggio in chat per il dettaglio):
+   1. Nel tuo foglio Google, crea una cella con la formula che calcola la percentuale
+   2. Condividi il foglio come "Chiunque abbia il link" > Visualizzatore
+   3. Inserisci qui sotto ID del foglio, nome della scheda e cella */
+const PROGRESS_SHEET_ID = '1F1eUStLkSp0Pky7w6U38FfRGG1c8NpA84YTl35Fdepc';
+const PROGRESS_SHEET_NAME = 'Foglio1';
+const PROGRESS_CELL = 'D2';
+
 function updateProgressBar() {
     const fill = document.getElementById('progress-fill');
-    const progressoAttuale = 49.20; // Valore percentuale
+    if (!fill) return;
 
-    if (fill) {
-        setTimeout(() => {
-            fill.style.width = progressoAttuale + "%";
-            animatePercent(progressoAttuale);
-        }, 500);
-    }
+    const url = `https://docs.google.com/spreadsheets/d/${PROGRESS_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(PROGRESS_SHEET_NAME)}&range=${PROGRESS_CELL}`;
 
-    if (progressoAttuale >= 100) {
-        const msg = document.getElementById('list-closed-msg');
-        if (msg) msg.style.display = "block";
-        document.querySelectorAll('.action-btn').forEach(btn => btn.style.display = "none");
-    }
+    fetch(url)
+        .then(res => { if (!res.ok) throw new Error('network'); return res.text(); })
+        .then(csvText => {
+            const raw = csvText.trim().replace(/"/g, '').replace(',', '.');
+            let progressoAttuale = parseFloat(raw);
+            if (isNaN(progressoAttuale)) progressoAttuale = 0;
+            progressoAttuale = Math.min(Math.max(progressoAttuale, 0), 100);
+
+            setTimeout(() => {
+                fill.style.width = progressoAttuale + "%";
+                animatePercent(progressoAttuale);
+            }, 500);
+
+            if (progressoAttuale >= 100) {
+                const msg = document.getElementById('list-closed-msg');
+                if (msg) msg.style.display = "block";
+                document.querySelectorAll('.action-btn').forEach(btn => btn.style.display = "none");
+            }
+        })
+        .catch(() => {
+            console.warn('Impossibile aggiornare la barra dal foglio Google.');
+        });
 }
 
 /* ============================================
