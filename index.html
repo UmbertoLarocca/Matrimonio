@@ -900,7 +900,10 @@ section#viaggio { padding: 80px 20px; }
 
 <div id="photoLightbox" class="photo-lightbox" onclick="if(event.target===this) closePhotoLightbox()">
     <span class="modal-close" onclick="closePhotoLightbox()">&times;</span>
+    <button class="nav-arrow prev-arrow" onclick="movePhotoLightbox(-1)">&#10094;</button>
     <img id="photoLightboxImg" src="" alt="Foto matrimonio">
+    <button class="nav-arrow next-arrow" onclick="movePhotoLightbox(1)">&#10095;</button>
+    <span id="photoLightboxCounter" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); color:white; font-size:0.9rem;"></span>
 </div>
 
         <section id="contatti" style="background-color: #f0f7f7; border-bottom: none;">
@@ -1239,7 +1242,7 @@ const CLOUDINARY_TAG = 'matrimonio_umberto_laura_2026';
    la galleria si sbloccherà subito, indipendentemente dalla data. Ricordati di
    rimetterlo a false quando hai finito di testare! */
 const GALLERY_UNLOCK_DATE = new Date('2026-09-12T00:00:00');
-const GALLERY_TEST_MODE = false;
+const GALLERY_TEST_MODE = true;
 
 function isGalleryUnlocked() {
     return GALLERY_TEST_MODE || new Date() >= GALLERY_UNLOCK_DATE;
@@ -1277,6 +1280,16 @@ function initPhotoGallery() {
     dropZone.addEventListener('drop', (e) => {
         if (e.dataTransfer.files && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
     });
+
+    const lightboxEl = document.getElementById('photoLightbox');
+    if (lightboxEl) {
+        let touchStartX = 0;
+        lightboxEl.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; });
+        lightboxEl.addEventListener('touchend', (e) => {
+            const diff = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(diff) > 50) movePhotoLightbox(diff > 0 ? -1 : 1);
+        });
+    }
 
     loadPhotoGallery();
     setInterval(loadPhotoGallery, 20000);
@@ -1401,10 +1414,10 @@ function loadPhotoGallery() {
             if (resources.length !== lastGalleryCount) {
                 lastGalleryCount = resources.length;
                 document.documentElement.style.setProperty('--gallery-thumb-size', getThumbSize(resources.length) + 'px');
-                grid.innerHTML = resources.map(r => {
+               galleryFullUrls = resources.map(r => `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/w_1600,q_auto,f_auto/v${r.version}/${r.public_id}.${r.format}`);
+                grid.innerHTML = resources.map((r, i) => {
                     const thumbUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/w_400,h_400,c_fill,q_auto,f_auto/v${r.version}/${r.public_id}.${r.format}`;
-                    const fullUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/w_1600,q_auto,f_auto/v${r.version}/${r.public_id}.${r.format}`;
-                    return `<img src="${thumbUrl}" loading="lazy" onclick="openPhotoLightbox('${fullUrl}')" alt="Foto matrimonio">`;
+                    return `<img src="${thumbUrl}" loading="lazy" onclick="openPhotoLightbox(${i})" alt="Foto matrimonio">`;
                 }).join('');
             }
             countLabel.textContent = `📷 ${resources.length} foto condivise finora`;
@@ -1416,15 +1429,35 @@ function loadPhotoGallery() {
         });
 }
 
-function openPhotoLightbox(url) {
-    document.getElementById('photoLightboxImg').src = url;
+let galleryFullUrls = [];
+let currentLightboxIndex = -1;
+
+function openPhotoLightbox(index) {
+    currentLightboxIndex = index;
+    updateLightboxImage();
     document.getElementById('photoLightbox').style.display = 'flex';
     document.body.classList.add('modal-open');
+}
+function movePhotoLightbox(direction) {
+    if (galleryFullUrls.length === 0) return;
+    currentLightboxIndex = (currentLightboxIndex + direction + galleryFullUrls.length) % galleryFullUrls.length;
+    updateLightboxImage();
+}
+function updateLightboxImage() {
+    document.getElementById('photoLightboxImg').src = galleryFullUrls[currentLightboxIndex];
+    document.getElementById('photoLightboxCounter').textContent = (currentLightboxIndex + 1) + ' / ' + galleryFullUrls.length;
 }
 function closePhotoLightbox() {
     document.getElementById('photoLightbox').style.display = 'none';
     document.body.classList.remove('modal-open');
 }
+document.addEventListener('keydown', (e) => {
+    const lb = document.getElementById('photoLightbox');
+    if (!lb || lb.style.display !== 'flex') return;
+    if (e.key === 'ArrowLeft') movePhotoLightbox(-1);
+    if (e.key === 'ArrowRight') movePhotoLightbox(1);
+    if (e.key === 'Escape') closePhotoLightbox();
+});
 
 window.addEventListener('DOMContentLoaded', initPhotoGallery);
         
