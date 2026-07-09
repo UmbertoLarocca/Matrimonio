@@ -528,6 +528,13 @@ body.modal-open {
         .petal { position: absolute; background-size: contain; background-repeat: no-repeat; opacity: 0.6; pointer-events: none; z-index: 50; will-change: transform; }
 
 /* --- GALLERIA CONDIVISA --- */
+#galleryUnlockedContent {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+        
 .photo-upload-zone {
     width: 100%;
     max-width: 650px;
@@ -1224,8 +1231,8 @@ function updateProgressBar() {
    4. In Settings > Security, disattiva la voce "Resource list" (serve per mostrare la galleria pubblica)
    ============================================ */
 const CLOUDINARY_CLOUD_NAME = 'meankqfy';
-const CLOUDINARY_UPLOAD_PRESET = 'Galleria Matrimonio';
-const CLOUDINARY_TAG = 'Matrimonio_Umberto&Laura_2026';
+const CLOUDINARY_UPLOAD_PRESET = 'galleria_matrimonio';
+const CLOUDINARY_TAG = 'matrimonio_umberto_laura_2026';
 
 /* Data di apertura della galleria: prima di questa data la sezione resta bloccata.
    Per fare dei TEST prima del matrimonio, metti GALLERY_TEST_MODE a true qui sotto:
@@ -1240,7 +1247,7 @@ function isGalleryUnlocked() {
 
 const cloudinaryConfigured = () =>
     CLOUDINARY_CLOUD_NAME !== 'meankqfy' &&
-    CLOUDINARY_UPLOAD_PRESET !== 'Galleria Matrimonio';
+    CLOUDINARY_UPLOAD_PRESET !== 'galleria_matrimonio';
 
 function initPhotoGallery() {
     const dropZone = document.getElementById('photoDropZone');
