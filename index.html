@@ -267,6 +267,66 @@ section:not(#home) {
     cursor: help;
 }
 
+* --- RIQUADRO IBAN DEDICATO NEL MESSAGGIO DI LISTA CHIUSA --- */
+        
+.closed-iban-box {
+    background: #ffffff;
+    border: 2px dashed #ffcc80;
+    border-radius: 16px;
+    padding: 18px 15px;
+    margin: 15px 0 5px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(230, 81, 0, 0.08);
+}
+
+.closed-iban-label {
+    font-size: 0.8rem;
+    color: #e65100;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.closed-iban-holder {
+    font-size: 1.1rem;
+    color: #455a64;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.closed-iban-code {
+    font-family: monospace;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #d84315;
+    background: #fff8e1;
+    padding: 10px 12px;
+    border-radius: 8px;
+    letter-spacing: 1px;
+    word-break: break-all;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.btn-copy-closed-iban {
+    background: #e65100;
+    color: white;
+    border: none;
+    padding: 8px 22px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    font-family: 'Lora', serif;
+}
+
+.btn-copy-closed-iban:hover {
+    background: #bf360c;
+    transform: translateY(-2px);
+}
+ /* Fine riquadro iban dedicato */       
 
 /* Messaggio di Lista Chiusa */
 #list-closed-msg {
@@ -781,12 +841,20 @@ section#viaggio { padding: 80px 20px; }
         <div id="list-closed-msg">
             🎉 Obiettivo raggiunto! La lista nozze è ufficialmente chiusa. <br>
             Grazie di cuore a tutti per aver reso possibile questo sogno!
-            Se volete continuare a sostenere il nostro viaggio insieme
-            potete farlo qui:
-            Intestato a: Laura Cammarota
-            IBAN: IT23Y0760104200001026071363
+            <span style="display:inline-block; margin-top:8px;">Se volete comunque continuare a sostenere il nostro viaggio insieme, potete farlo qui:</span>
+
+            <!-- Riquadro IBAN isolato ed elegante -->
+            <div class="closed-iban-box">
+                <div class="closed-iban-label">IBAN</div>
+                <span class="closed-iban-code" id="closedIbanText">IT23Y0760104200001026071363</span>
+
+                <div class="closed-iban-label">Intestato a</div>
+                <div class="closed-iban-holder">Laura Cammarota</div>
+                
+                <button type="button" class="btn-copy-closed-iban" onclick="copiaIBANChiusura()">📋 Copia IBAN</button>
+            </div>
         </div>
-    </div>
+    
     
     <div class="map-container-desktop">
         <div class="honey-wrapper">
@@ -1503,6 +1571,14 @@ fill.innerText = "";
     }, 80); // Velocità del conteggio (più alto=più lento)
 }
 
+ function copiaIBANChiusura() {
+    const iban = document.getElementById("closedIbanText").innerText;
+    navigator.clipboard.writeText(iban).then(() => {
+        alert("IBAN copiato negli appunti!");
+    }).catch(() => {
+        alert("Codice IBAN: " + iban);
+    });
+}       
 
     </script>
 </body>
