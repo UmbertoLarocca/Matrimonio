@@ -657,7 +657,7 @@ body.modal-open {
     padding: 10px 14px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
-.upload-item img { width: 46px; height: 46px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.upload-item img, .upload-item video { width: 46px; height: 46px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
 .upload-item-info { flex: 1; min-width: 0; }
 .upload-item-name { font-size: 0.8rem; color: #546e7a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .upload-progress-bar { width: 100%; height: 6px; background: #eceff1; border-radius: 10px; overflow: hidden; margin-top: 5px; }
@@ -665,6 +665,21 @@ body.modal-open {
 .upload-item-status { font-size: 1.1rem; flex-shrink: 0; }
 .upload-item.error .upload-progress-fill { background: #e57373; }
 .upload-item.error .upload-item-name { color: #c62828; }
+.gallery-video-wrap { position: relative; }
+.gallery-video-wrap::after {
+    content: "▶";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.4rem;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.15);
+    pointer-events: none;
+}
+#photoLightboxVideo { max-width: 90vw; max-height: 85vh; }
 
 .photo-gallery-grid {
     display: grid;
@@ -957,8 +972,8 @@ section#viaggio { padding: 80px 20px; }
                 <button type="button" class="btn-photo" onclick="document.getElementById('cameraInput').click()">📷 Scatta una foto</button>
                 <button type="button" class="btn-photo secondary" onclick="document.getElementById('fileInput').click()">🖼️ Carica dalla galleria</button>
             </div>
-            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
-            <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
+            <input type="file" id="cameraInput" accept="image/*,video/*" capture="environment" style="display:none;">
+            <input type="file" id="fileInput" accept="image/*,video/*" multiple style="display:none;">
         </div>
 
         <div class="upload-queue" id="uploadQueue"></div>
@@ -974,6 +989,7 @@ section#viaggio { padding: 80px 20px; }
     <span class="modal-close" onclick="closePhotoLightbox()">&times;</span>
     <button class="nav-arrow prev-arrow" onclick="movePhotoLightbox(-1)">&#10094;</button>
     <img id="photoLightboxImg" src="" alt="Foto matrimonio">
+    <video id="photoLightboxVideo" src="" controls style="display:none;"></video>
     <button class="nav-arrow next-arrow" onclick="movePhotoLightbox(1)">&#10095;</button>
     <span id="photoLightboxCounter" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); color:white; font-size:0.9rem;"></span>
 </div>
@@ -1398,9 +1414,12 @@ function handleFiles(fileList) {
         return;
     }
     Array.from(fileList).forEach(file => {
-        if (!file.type.startsWith('image/')) return;
-        if (file.size > 15 * 1024 * 1024) {
-            alert(`"${file.name}" supera i 15MB e non può essere caricata.`);
+        const isImage = file.type.startsWith('image/');
+        const isVideo = file.type.startsWith('video/');
+        if (!isImage && !isVideo) return;
+        const maxSize = isVideo ? 100 * 1024 * 1024 : 15 * 1024 * 1024;
+        if (file.size > maxSize) {
+            alert(`"${file.name}" supera i ${isVideo ? '100MB' : '15MB'} e non può essere caricata.`);
             return;
         }
         uploadPhoto(file);
@@ -1408,12 +1427,16 @@ function handleFiles(fileList) {
 }
 
 function uploadPhoto(file) {
+    const isVideo = file.type.startsWith('video/');
     const queue = document.getElementById('uploadQueue');
     const item = document.createElement('div');
     item.className = 'upload-item';
     const localUrl = URL.createObjectURL(file);
+    const previewTag = isVideo
+        ? `<video src="${localUrl}" muted></video>`
+        : `<img src="${localUrl}" alt="anteprima">`;
     item.innerHTML = `
-        <img src="${localUrl}" alt="anteprima">
+        ${previewTag}
         <div class="upload-item-info">
             <div class="upload-item-name">${file.name}</div>
             <div class="upload-progress-bar"><div class="upload-progress-fill"></div></div>
@@ -1426,7 +1449,7 @@ function uploadPhoto(file) {
     const statusIcon = item.querySelector('.upload-item-status');
 
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`);
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${isVideo ? 'video' : 'image'}/upload`);
 
     xhr.upload.addEventListener('progress', (e) => {
         if (e.lengthComputable) {
@@ -1489,11 +1512,15 @@ function loadPhotoGallery() {
         return;
     }
 
-    fetch(`https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/list/${CLOUDINARY_TAG}.json`)
-        .then(res => { if (!res.ok) throw new Error('network'); return res.json(); })
-        .then(data => {
+    Promise.all([
+        fetch(`https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/list/${CLOUDINARY_TAG}.json`).then(res => res.ok ? res.json() : { resources: [] }),
+        fetch(`https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/list/${CLOUDINARY_TAG}.json`).then(res => res.ok ? res.json() : { resources: [] })
+    ])
+        .then(([imageData, videoData]) => {
             loadingMsg.style.display = 'none';
-            const resources = (data.resources || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const images = (imageData.resources || []).map(r => ({ ...r, resource_type: 'image' }));
+            const videos = (videoData.resources || []).map(r => ({ ...r, resource_type: 'video' }));
+            const resources = images.concat(videos).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
             if (resources.length === 0) {
                 emptyMsg.style.display = 'block';
@@ -1507,13 +1534,22 @@ function loadPhotoGallery() {
             if (resources.length !== lastGalleryCount) {
                 lastGalleryCount = resources.length;
                 document.documentElement.style.setProperty('--gallery-thumb-size', getThumbSize(resources.length) + 'px');
-               galleryFullUrls = resources.map(r => `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/w_1600,q_auto,f_auto/v${r.version}/${r.public_id}.${r.format}`);
+                galleryFullUrls = resources.map(r => ({
+                    url: `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/${r.resource_type}/upload/w_1600,q_auto,f_auto/v${r.version}/${r.public_id}.${r.format}`,
+                    type: r.resource_type
+                }));
                 grid.innerHTML = resources.map((r, i) => {
+                    if (r.resource_type === 'video') {
+                        const posterUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload/so_0,w_400,h_400,c_fill,q_auto/v${r.version}/${r.public_id}.jpg`;
+                        return `<div class="gallery-video-wrap"><img src="${posterUrl}" loading="lazy" onclick="openPhotoLightbox(${i})" alt="Video matrimonio"></div>`;
+                    }
                     const thumbUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/w_400,h_400,c_fill,q_auto,f_auto/v${r.version}/${r.public_id}.${r.format}`;
                     return `<img src="${thumbUrl}" loading="lazy" onclick="openPhotoLightbox(${i})" alt="Foto matrimonio">`;
                 }).join('');
             }
-            countLabel.textContent = `📷 ${resources.length} foto condivise finora`;
+            const photoCount = resources.filter(r => r.resource_type === 'image').length;
+            const videoCount = resources.filter(r => r.resource_type === 'video').length;
+            countLabel.textContent = `📷 ${photoCount} foto e 🎥 ${videoCount} video condivisi finora`;
         })
         .catch(() => {
             loadingMsg.style.display = 'none';
@@ -1537,11 +1573,25 @@ function movePhotoLightbox(direction) {
     updateLightboxImage();
 }
 function updateLightboxImage() {
-    document.getElementById('photoLightboxImg').src = galleryFullUrls[currentLightboxIndex];
+    const item = galleryFullUrls[currentLightboxIndex];
+    const imgEl = document.getElementById('photoLightboxImg');
+    const videoEl = document.getElementById('photoLightboxVideo');
+    videoEl.pause();
+    if (item.type === 'video') {
+        videoEl.src = item.url;
+        videoEl.style.display = 'block';
+        imgEl.style.display = 'none';
+    } else {
+        imgEl.src = item.url;
+        imgEl.style.display = 'block';
+        videoEl.style.display = 'none';
+        videoEl.src = '';
+    }
     document.getElementById('photoLightboxCounter').textContent = (currentLightboxIndex + 1) + ' / ' + galleryFullUrls.length;
 }
 function closePhotoLightbox() {
     document.getElementById('photoLightbox').style.display = 'none';
+    document.getElementById('photoLightboxVideo').pause();
     document.body.classList.remove('modal-open');
 }
 document.addEventListener('keydown', (e) => {
